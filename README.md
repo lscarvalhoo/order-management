@@ -11,15 +11,6 @@ A solução segue os princípios da **Clean Architecture**, em que as dependênc
 - `Infrastructure` depende de `Application` e `Domain`.
 - `API` depende de `Application` e `Infrastructure`, sendo a última utilizada para configuração da aplicação (injeção de dependências, banco de dados, logging, etc.).
 
-```mermaid
-flowchart LR
-    Api[OrderManagement.API] --> App[OrderManagement.Application]
-    Api --> Infra[OrderManagement.Infrastructure]
-    Infra --> App
-    Infra --> Domain[OrderManagement.Domain]
-    App --> Domain
-```
-
 ## Estrutura da Solução
 
 ```text
