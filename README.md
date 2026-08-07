@@ -4,15 +4,6 @@ Backend para gerenciamento de pedidos, com foco em organização, manutenibilida
 
 ## Visão da Arquitetura
 
-```mermaid
-flowchart LR
-    D[OrderManagement.API] --> B[OrderManagement.Application]
-    D --> C[OrderManagement.Infrastructure]
-    C --> B
-    C --> A[OrderManagement.Domain]
-    B --> A
-```
-
 A solução segue os princípios da **Clean Architecture**, em que as dependências sempre apontam para as camadas mais internas da aplicação.
 
 - `Domain` não depende de nenhuma outra camada.

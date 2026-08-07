@@ -1,0 +1,6 @@
+{
+  "OrderManagement.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "C:\\Users\\leona\\OneDrive\\Documents\\GitHub\\order-management\\src\\API\\OrderManagement.API",
+  "OrderManagement.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "C:\\Users\\leona\\OneDrive\\Documents\\GitHub\\order-management\\src\\Application\\OrderManagement.Application",
+  "OrderManagement.Domain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "C:\\Users\\leona\\OneDrive\\Documents\\GitHub\\order-management\\src\\Domain\\OrderManagement.Domain",
+  "OrderManagement.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "C:\\Users\\leona\\OneDrive\\Documents\\GitHub\\order-management\\src\\Infrastructure\\OrderManagement.Infrastructure"
+}
