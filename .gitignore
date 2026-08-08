@@ -31,6 +31,10 @@ coverage.*
 
 # Logs
 *.log
+logs/
+
+# Documentation (local only)
+docs/
 
 # NuGet packages (when using packages folder)
 packages/
