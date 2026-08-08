@@ -1,62 +1,58 @@
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using OrderManagement.API.Models;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using OrderManagement.Application.Commands.Login;
 
 namespace OrderManagement.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/auth")]
 public class AuthController : ControllerBase
 {
-    private readonly IConfiguration _configuration;
+    private readonly IMediator _mediator;
+    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(IConfiguration configuration)
+    public AuthController(IMediator mediator, ILogger<AuthController> logger)
     {
-        _configuration = configuration;
+        _mediator = mediator;
+        _logger = logger;
     }
 
+    /// <summary>
+    /// Endpoint de autenticação - Credenciais configuradas em appsettings.Development.json
+    /// </summary>
+    /// <param name="request">Credenciais de login</param>
+    /// <param name="cancellationToken">Token de cancelamento</param>
+    /// <returns>Token JWT e data de expiração</returns>
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginRequest request)
+    [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Login(
+        [FromBody] LoginRequest request,
+        CancellationToken cancellationToken)
     {
-        // Usuário fixo em memória para demonstração
-        if (request.Username == "admin" && request.Password == "admin123")
+        try
         {
-            var token = GenerateJwtToken(request.Username);
-            var expiresAt = DateTime.UtcNow.AddHours(8);
+            var command = new LoginCommand(request.Username, request.Password);
+            var result = await _mediator.Send(command, cancellationToken);
 
             return Ok(new LoginResponse
             {
-                Token = token,
-                ExpiresAt = expiresAt
+                Token = result.Token,
+                ExpiresAt = result.ExpiresAt
             });
         }
-
-        return Unauthorized(new { message = "Invalid username or password" });
-    }
-
-    private string GenerateJwtToken(string username)
-    {
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? "YourSuperSecretKeyForJWTTokenGenerationWithMinimum32Characters"));
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-        var claims = new[]
+        catch (UnauthorizedAccessException ex)
         {
-            new Claim(ClaimTypes.Name, username),
-            new Claim(ClaimTypes.Role, "Admin"),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
-
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"] ?? "OrderManagementAPI",
-            audience: _configuration["Jwt:Audience"] ?? "OrderManagementClient",
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(8),
-            signingCredentials: credentials
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+            _logger.LogWarning(ex, "Unauthorized login attempt");
+            return Unauthorized(new { message = ex.Message });
+        }
+        catch (ValidationException ex)
+        {
+            _logger.LogWarning(ex, "Validation error during login");
+            return BadRequest(new { message = ex.Message, errors = ex.Errors });
+        }
     }
 }

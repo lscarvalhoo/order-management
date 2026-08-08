@@ -11,6 +11,15 @@ A solução segue os princípios da **Clean Architecture**, em que as dependênc
 - `Infrastructure` depende de `Application` e `Domain`.
 - `API` depende de `Application` e `Infrastructure`, sendo a última utilizada para configuração da aplicação (injeção de dependências, banco de dados, logging, etc.).
 
+## Credenciais
+
+```
+Email: dev@martech.com
+Senha: Senha@123
+```
+
+**Endpoint de autenticação**: `POST /api/auth/login`
+
 ## Estrutura da Solução
 
 ```text
@@ -28,6 +37,16 @@ OrderManagement.sln
     ├── OrderManagement.UnitTests/               (xUnit)
     └── OrderManagement.IntegrationTests/        (xUnit + WebApplicationFactory)
 ```
+## Por que Controllers e não Minimal API?
+
+Apesar do .NET 10 oferecer suporte para **Minimal APIs**, este projeto utiliza **Controllers** porque:
+
+- **Organização**: Melhor para projetos com múltiplos endpoints relacionados (AuthController, OrdersController)
+- **Clean Architecture**: Alinha perfeitamente com a separação em camadas e CQRS
+- **Manutenibilidade**: Código mais explícito, facilita onboarding de novos desenvolvedores
+- **Testabilidade**: Injeção de dependências tradicional e mock direto
+- **Swagger**: Integração nativa com attributes `[Authorize]`, `[ProducesResponseType]`, etc.
+- **Boas práticas**: Estrutura profissional preparada para crescimento futuro
 
 ## Projetos
 

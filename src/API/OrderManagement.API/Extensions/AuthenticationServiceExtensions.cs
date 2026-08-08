@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using OrderManagement.API.Configuration;
+using OrderManagement.API.Services;
+using OrderManagement.Application.Commands.Login;
 using System.Text;
 
 namespace OrderManagement.API.Extensions;
@@ -12,12 +13,18 @@ public static class AuthenticationServiceExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var jwtKey = configuration["Jwt:Key"] 
+        var jwtKey = configuration["Jwt:Key"]
             ?? throw new InvalidOperationException("JWT Key is not configured");
-        var jwtIssuer = configuration["Jwt:Issuer"] 
+        var jwtIssuer = configuration["Jwt:Issuer"]
             ?? throw new InvalidOperationException("JWT Issuer is not configured");
-        var jwtAudience = configuration["Jwt:Audience"] 
+        var jwtAudience = configuration["Jwt:Audience"]
             ?? throw new InvalidOperationException("JWT Audience is not configured");
+
+        services.Configure<DevelopmentAuthOptions>(
+            configuration.GetSection(DevelopmentAuthOptions.SectionName));
+
+        services.AddScoped<IAuthenticationService, DevelopmentAuthenticationService>();
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
 
         services.AddAuthentication(options =>
         {
