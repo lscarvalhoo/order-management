@@ -28,6 +28,21 @@ public class OrderRepository : IOrderRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<(IEnumerable<Order> Items, int TotalCount)> GetPagedAsync(int page, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var query = _context.Orders.Include(o => o.Items);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
+            .OrderByDescending(o => o.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return (items, totalCount);
+    }
+
     public async Task<Order> AddAsync(Order order, CancellationToken cancellationToken = default)
     {
         await _context.Orders.AddAsync(order, cancellationToken);

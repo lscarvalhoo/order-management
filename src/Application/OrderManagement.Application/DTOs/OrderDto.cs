@@ -9,5 +9,5 @@ public sealed class OrderDto
     public OrderStatus Status { get; set; }
     public DateTime CreatedAt { get; set; }
     public List<OrderItemDto> Items { get; set; } = new();
-    public decimal TotalAmount => Items.Sum(i => i.Quantity * i.UnitPrice);
+    public decimal TotalAmount { get; set; }
 }

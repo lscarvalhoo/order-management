@@ -28,6 +28,7 @@ public class GetOrderQueryHandler : IRequestHandler<GetOrderQuery, OrderDto?>
             CustomerId = order.CustomerId,
             Status = order.Status,
             CreatedAt = order.CreatedAt,
+            TotalAmount = order.TotalAmount,
             Items = order.Items.Select(item => new OrderItemDto
             {
                 ProductName = item.ProductName,

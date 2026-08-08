@@ -1,9 +1,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OrderManagement.Application.Commands.CancelOrder;
 using OrderManagement.Application.Commands.CreateOrder;
-using OrderManagement.Application.Commands.DeleteOrder;
-using OrderManagement.Application.Commands.UpdateOrderStatus;
 using OrderManagement.Application.Queries.GetAllOrders;
 using OrderManagement.Application.Queries.GetOrder;
 
@@ -21,14 +20,22 @@ public class OrdersController : ControllerBase
         _mediator = mediator;
     }
 
+    /// <summary>
+    /// Lista pedidos com paginação
+    /// </summary>
+    /// <param name="page">Número da página (padrão: 1)</param>
+    /// <param name="pageSize">Tamanho da página (padrão: 10)</param>
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
     {
-        var query = new GetAllOrdersQuery();
-        var orders = await _mediator.Send(query, cancellationToken);
-        return Ok(orders);
+        var query = new GetAllOrdersQuery { Page = page, PageSize = pageSize };
+        var result = await _mediator.Send(query, cancellationToken);
+        return Ok(result);
     }
 
+    /// <summary>
+    /// Retorna pedido por ID
+    /// </summary>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
@@ -43,6 +50,9 @@ public class OrdersController : ControllerBase
         return Ok(order);
     }
 
+    /// <summary>
+    /// Cria um novo pedido
+    /// </summary>
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateOrderCommand command, CancellationToken cancellationToken)
     {
@@ -50,19 +60,25 @@ public class OrdersController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
     }
 
-    [HttpPatch("{id}/status")]
-    public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateOrderStatusCommand command, CancellationToken cancellationToken)
+    /// <summary>
+    /// Cancela um pedido (apenas pedidos com status Pending)
+    /// </summary>
+    [HttpPatch("{id}/cancel")]
+    public async Task<IActionResult> Cancel(Guid id, CancellationToken cancellationToken)
     {
-        command.OrderId = id;
-        await _mediator.Send(command, cancellationToken);
-        return NoContent();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
-    {
-        var command = new DeleteOrderCommand { OrderId = id };
-        await _mediator.Send(command, cancellationToken);
-        return NoContent();
+        try
+        {
+            var command = new CancelOrderCommand { OrderId = id };
+            await _mediator.Send(command, cancellationToken);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 }

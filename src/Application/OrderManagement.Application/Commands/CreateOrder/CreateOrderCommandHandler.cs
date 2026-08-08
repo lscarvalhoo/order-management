@@ -40,6 +40,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Ord
             CustomerId = createdOrder.CustomerId,
             Status = createdOrder.Status,
             CreatedAt = createdOrder.CreatedAt,
+            TotalAmount = createdOrder.TotalAmount,
             Items = createdOrder.Items.Select(item => new OrderItemDto
             {
                 ProductName = item.ProductName,
