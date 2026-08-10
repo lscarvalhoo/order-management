@@ -345,17 +345,51 @@ O projeto inclui configuração do **SonarQube** para análise de qualidade, cob
 
 ### Análise Local (Recomendado)
 
-Executa a análise usando `dotnet sonarscanner` diretamente, sem Docker:
+Executa a análise usando `dotnet sonarscanner` diretamente na máquina, sem depender do container `scanner`. Essa opção é a mais simples para o fluxo do dia a dia quando você já tem o SonarQube disponível localmente.
 
 #### Pré-requisitos
 
-1. Instalar o SonarScanner:
+1. Instalar o SonarScanner para .NET:
+
+O comando abaixo instala a ferramenta globalmente no seu ambiente de desenvolvimento. Depois disso, o comando `dotnet sonarscanner` fica disponível no terminal.
+
 ```powershell
 dotnet tool install --global dotnet-sonarscanner
 ```
 
-2. Iniciar uma instância local do SonarQube em http://localhost:9000
-3. Gerar um token em **My Account → Security → Generate Tokens**
+Se a ferramenta já estiver instalada, você pode atualizar com:
+
+```powershell
+dotnet tool update --global dotnet-sonarscanner
+```
+
+2. Iniciar o SonarQube local:
+
+```powershell
+.\scripts\sonar.ps1 start
+```
+
+Aguarde cerca de 60 segundos e acesse `http://localhost:9000`.
+
+3. Gerar um token de acesso:
+
+O `dotnet sonarscanner` não usa usuário e senha diretamente na análise. Ele usa um token gerado no SonarQube para autenticar a execução.
+
+Passo a passo:
+
+- Acesse `http://localhost:9000`
+- Entre com o usuário `admin` e senha `admin` se a stack tiver acabado de ser resetada
+- Altere a senha, se o SonarQube solicitar
+- No canto superior direito, abra **My Account**
+- Acesse **Security**
+- Em **Generate Tokens**, informe um nome para o token, como `local-analysis`
+- Gere o token e copie o valor imediatamente
+
+Importante:
+
+- O token é exibido apenas no momento da criação
+- Guarde esse valor com segurança
+- Use o token na variável de ambiente `SONAR_TOKEN`
 
 #### Executar Análise
 
@@ -389,6 +423,22 @@ chmod +x scripts/sonar.sh
 ./scripts/sonar.sh start
 SONAR_TOKEN=seu_token ./scripts/sonar.sh analyze
 ```
+
+#### Credenciais padrão e reset da stack
+
+Após recriar os volumes do SonarQube, o acesso volta para as credenciais padrão:
+
+- Usuário: `admin`
+- Senha: `admin`
+
+Se precisar restaurar esse estado localmente:
+
+```powershell
+docker-compose -f build/docker-compose.sonar.yml down -v
+docker-compose -f build/docker-compose.sonar.yml up -d sonarqube sonarqube-db
+```
+
+Depois do reset, aguarde cerca de 60 segundos e acesse `http://localhost:9000`.
 
 ---
 
