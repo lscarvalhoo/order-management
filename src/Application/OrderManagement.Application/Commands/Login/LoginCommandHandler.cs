@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
+using OrderManagement.Application.Interfaces;
 
 namespace OrderManagement.Application.Commands.Login;
 
@@ -37,16 +38,4 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginCommandRes
 
         return Task.FromResult(new LoginCommandResult(token, expiresAt));
     }
-}
-
-// Interfaces - estas devem ser implementadas na camada de Infrastructure/API
-public interface IAuthenticationService
-{
-    bool ValidateCredentials(string email, string password);
-    string GetUserRole(string email);
-}
-
-public interface IJwtTokenService
-{
-    string GenerateToken(string email, string role);
 }

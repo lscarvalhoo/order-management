@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrderManagement.Application.Commands.Login;
+using OrderManagement.Application.Interfaces;
 using OrderManagement.Infrastructure.Configuration;
 
 namespace OrderManagement.Infrastructure.Services;

@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrderManagement.Application.Commands.Login;
+using OrderManagement.Application.Interfaces;
 
 namespace OrderManagement.UnitTests.Handlers;
 

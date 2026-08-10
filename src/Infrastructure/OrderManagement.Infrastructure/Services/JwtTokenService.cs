@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using OrderManagement.Application.Commands.Login;
+using OrderManagement.Application.Interfaces;
 using OrderManagement.Infrastructure.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
