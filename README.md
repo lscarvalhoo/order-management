@@ -212,9 +212,70 @@ CREATE TABLE OrderItems (
 
 ### Ferramentas para acesso ao banco
 
-- **CLI:** `sqlite3 src/API/OrderManagement.API/ordermanagement.db`
-- **GUI:** [DB Browser for SQLite](https://sqlitebrowser.org/dl/)
-- **VS Code:** extensão *SQLite Viewer*
+#### **Opção 1: CLI (sqlite3)**
+
+Se você tiver o SQLite CLI instalado:
+
+```bash
+# Abrir o banco de dados
+sqlite3 src/API/OrderManagement.API/ordermanagement.db
+
+# Comandos úteis:
+.tables                          # Listar todas as tabelas
+.schema Orders                   # Ver estrutura da tabela Orders
+SELECT * FROM Orders;            # Consultar todos os pedidos
+SELECT * FROM OrderItems;        # Consultar todos os itens
+.quit                            # Sair
+```
+
+#### **Opção 2: DB Browser for SQLite (GUI - Recomendado)**
+
+1. **Download:** [DB Browser for SQLite](https://sqlitebrowser.org/dl/)
+2. **Instalar** e abrir o programa
+3. **Abrir banco:** `File > Open Database`
+4. **Navegar até:** `C:\caminho\seu\projeto\src\API\OrderManagement.API\ordermanagement.db`
+5. **Explorar:**
+   - Aba **Database Structure**: ver tabelas e colunas
+   - Aba **Browse Data**: visualizar e editar dados
+   - Aba **Execute SQL**: executar queries personalizadas
+
+**Queries úteis:**
+```sql
+-- Ver todos os pedidos com seus totais
+SELECT Id, CustomerId, Status, TotalAmount, CreatedAt 
+FROM Orders 
+ORDER BY CreatedAt DESC;
+
+-- Ver detalhes de um pedido específico com seus itens
+SELECT 
+    o.Id as OrderId,
+    o.Status,
+    o.TotalAmount,
+    oi.ProductName,
+    oi.Quantity,
+    oi.UnitPrice
+FROM Orders o
+INNER JOIN OrderItems oi ON o.Id = oi.OrderId
+WHERE o.Id = 'seu-guid-aqui';
+
+-- Contar pedidos por status
+SELECT Status, COUNT(*) as Total
+FROM Orders
+GROUP BY Status;
+```
+
+#### **Opção 3: VS Code (SQLite Viewer)**
+
+1. **Instalar extensão:** [SQLite Viewer](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer)
+2. **No VS Code:** abrir o arquivo `src/API/OrderManagement.API/ordermanagement.db`
+3. **Clicar com botão direito** > "Open with SQLite Viewer"
+4. **Visualizar** tabelas e dados diretamente no editor
+
+#### **Opção 4: Azure Data Studio / DBeaver**
+
+Alternativas mais robustas que também suportam SQLite:
+- **Azure Data Studio** com extensão SQLite
+- **DBeaver Community Edition**
 
 ---
 
