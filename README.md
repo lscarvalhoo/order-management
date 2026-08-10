@@ -187,7 +187,7 @@ O projeto usa **SQLite** com migrations aplicadas automaticamente na inicializa�
 
 | Ambiente | Localização |
 |---|---|
-| Local | `src/API/OrderManagement.API/ordermanagement.db` |
+| Local | `data/ordermanagement.db` (na raiz do projeto) |
 | Docker | `./data/ordermanagement.db` (volume montado) |
 
 ### Schema
@@ -217,7 +217,7 @@ CREATE TABLE OrderItems (
 1. **Download:** [DB Browser for SQLite](https://sqlitebrowser.org/dl/)
 2. **Instalar** e abrir o programa
 3. **Abrir banco:** `File > Open Database`
-4. **Navegar até:** `C:\caminho\seu\projeto\src\API\OrderManagement.API\ordermanagement.db`
+4. **Navegar até:** `C:\caminho\seu\projeto\data\ordermanagement.db`
 5. **Explorar:**
    - Aba **Database Structure**: ver tabelas e colunas
    - Aba **Browse Data**: visualizar e editar dados
@@ -251,7 +251,7 @@ GROUP BY Status;
 #### **Opção 2: VS Code (SQLite Viewer)**
 
 1. **Instalar extensão:** [SQLite Viewer](https://marketplace.visualstudio.com/items?itemName=qwtel.sqlite-viewer)
-2. **No VS Code:** abrir o arquivo `src/API/OrderManagement.API/ordermanagement.db`
+2. **No VS Code:** abrir o arquivo `data/ordermanagement.db`
 3. **Clicar com botão direito** > "Open with SQLite Viewer"
 4. **Visualizar** tabelas e dados diretamente no editor
 
