@@ -108,6 +108,9 @@ OrderManagement.sln
 
 #### **Windows (PowerShell):**
 ```powershell
+# Execute a partir da raiz do projeto (order-management/)
+cd C:\caminho\para\order-management
+
 # Iniciar aplicação
 .\scripts\docker.ps1 up
 
@@ -121,6 +124,8 @@ OrderManagement.sln
 .\scripts\docker.ps1 clean
 ```
 
+> **Importante:** Os comandos devem ser executados da **raiz do projeto**, não da pasta `scripts/`
+
 > **Primeira vez?** Habilite a execução de scripts:
 > ```powershell
 > Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
@@ -128,6 +133,9 @@ OrderManagement.sln
 
 #### **Linux/macOS:**
 ```bash
+# Execute a partir da raiz do projeto (order-management/)
+cd /caminho/para/order-management
+
 # Tornar script executável (apenas primeira vez)
 chmod +x scripts/docker.sh
 
@@ -169,6 +177,9 @@ chmod +x scripts/docker.sh
 
 **Windows:**
 ```powershell
+# Execute a partir da raiz do projeto (order-management/)
+cd C:\caminho\para\order-management
+
 # Executar API
 .\scripts\run-local.ps1
 
@@ -187,6 +198,9 @@ chmod +x scripts/docker.sh
 
 **Linux/macOS:**
 ```bash
+# Execute a partir da raiz do projeto (order-management/)
+cd /caminho/para/order-management
+
 # Tornar executável
 chmod +x scripts/run-local.sh
 
