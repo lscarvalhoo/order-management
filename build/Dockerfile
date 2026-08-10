@@ -2,28 +2,34 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine3.22 AS build
 RUN addgroup -S appgroup \
     && adduser -S appuser -G appgroup \
-    && mkdir -p /src /app /home/appuser/.nuget/packages \
-    && chown -R appuser:appgroup /src /app /home/appuser
+    && mkdir -p /source /work /app /home/appuser/.nuget/packages \
+    && chown -R appuser:appgroup /source /work /app /home/appuser
 ENV HOME=/home/appuser
 ENV NUGET_PACKAGES=/home/appuser/.nuget/packages
-WORKDIR /src
 USER appuser
+WORKDIR /source
 
 # Copy solution and project files
-COPY --chown=appuser:appgroup ["OrderManagement.sln", "./"]
-COPY --chown=appuser:appgroup ["src/API/OrderManagement.API/OrderManagement.API.csproj", "src/API/OrderManagement.API/"]
-COPY --chown=appuser:appgroup ["src/Application/OrderManagement.Application/OrderManagement.Application.csproj", "src/Application/OrderManagement.Application/"]
-COPY --chown=appuser:appgroup ["src/Domain/OrderManagement.Domain/OrderManagement.Domain.csproj", "src/Domain/OrderManagement.Domain/"]
-COPY --chown=appuser:appgroup ["src/Infrastructure/OrderManagement.Infrastructure/OrderManagement.Infrastructure.csproj", "src/Infrastructure/OrderManagement.Infrastructure/"]
+COPY --chown=appuser:appgroup --chmod=444 ["OrderManagement.sln", "./"]
+COPY --chown=appuser:appgroup --chmod=444 ["src/API/OrderManagement.API/OrderManagement.API.csproj", "src/API/OrderManagement.API/"]
+COPY --chown=appuser:appgroup --chmod=444 ["src/Application/OrderManagement.Application/OrderManagement.Application.csproj", "src/Application/OrderManagement.Application/"]
+COPY --chown=appuser:appgroup --chmod=444 ["src/Domain/OrderManagement.Domain/OrderManagement.Domain.csproj", "src/Domain/OrderManagement.Domain/"]
+COPY --chown=appuser:appgroup --chmod=444 ["src/Infrastructure/OrderManagement.Infrastructure/OrderManagement.Infrastructure.csproj", "src/Infrastructure/OrderManagement.Infrastructure/"]
+RUN cp -R /source/. /work/ \
+    && chmod -R u+w /work
 
 # Restore dependencies
+WORKDIR /work
 RUN dotnet restore "src/API/OrderManagement.API/OrderManagement.API.csproj"
 
 # Copy application source only
-COPY --chown=appuser:appgroup ["src/", "src/"]
+WORKDIR /source
+COPY --chown=appuser:appgroup --chmod=555 ["src/", "src/"]
+RUN cp -R /source/src/. /work/src/ \
+    && chmod -R u+w /work/src
 
 # Build the application
-WORKDIR "/src/src/API/OrderManagement.API"
+WORKDIR "/work/src/API/OrderManagement.API"
 RUN dotnet build "OrderManagement.API.csproj" -c Release -o /app/build
 
 # Publish stage
@@ -43,7 +49,7 @@ EXPOSE 8080
 EXPOSE 8081
 
 # Copy published application
-COPY --chown=appuser:appgroup --from=publish /app/publish .
+COPY --chown=appuser:appgroup --chmod=555 --from=publish /app/publish .
 
 # Set environment variables
 ENV ASPNETCORE_URLS=http://+:8080
@@ -52,7 +58,6 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 USER appuser
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost:8080/health || exit 1
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 CMD ["wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
 
 ENTRYPOINT ["dotnet", "OrderManagement.API.dll"]

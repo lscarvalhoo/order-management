@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using OrderManagement.API.Extensions;
 using OrderManagement.Application.Extensions;
 using OrderManagement.Infrastructure.Extensions;
@@ -72,6 +71,3 @@ if (!isTesting)
     Log.Information("OrderManagement API started successfully");
 }
 app.Run();
-
-[ExcludeFromCodeCoverage]
-public partial class Program { }

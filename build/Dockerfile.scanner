@@ -8,35 +8,41 @@ RUN apt-get update && \
 
 RUN groupadd --system appgroup \
 	&& useradd --system --create-home --gid appgroup appuser \
-	&& mkdir -p /src /home/appuser/.dotnet/tools /home/appuser/.nuget/packages \
-	&& chown -R appuser:appgroup /src /home/appuser
+	&& mkdir -p /source /work /home/appuser/.dotnet/tools /home/appuser/.nuget/packages \
+	&& chown -R appuser:appgroup /source /work /home/appuser
 ENV HOME=/home/appuser
 ENV NUGET_PACKAGES=/home/appuser/.nuget/packages
 ENV PATH="${PATH}:/home/appuser/.dotnet/tools"
-WORKDIR /src
 USER appuser
+WORKDIR /source
 
-# Install SonarScanner for .NET
-RUN dotnet tool install --global dotnet-sonarscanner
-
-# Install ReportGenerator for coverage
-RUN dotnet tool install --global dotnet-reportgenerator-globaltool
+# Install SonarScanner for .NET and ReportGenerator for coverage
+RUN dotnet tool install --global dotnet-sonarscanner \
+	&& dotnet tool install --global dotnet-reportgenerator-globaltool
 
 # Copy solution and project files
-COPY --chown=appuser:appgroup ["OrderManagement.sln", "./"]
-COPY --chown=appuser:appgroup ["src/API/OrderManagement.API/OrderManagement.API.csproj", "src/API/OrderManagement.API/"]
-COPY --chown=appuser:appgroup ["src/Application/OrderManagement.Application/OrderManagement.Application.csproj", "src/Application/OrderManagement.Application/"]
-COPY --chown=appuser:appgroup ["src/Domain/OrderManagement.Domain/OrderManagement.Domain.csproj", "src/Domain/OrderManagement.Domain/"]
-COPY --chown=appuser:appgroup ["src/Infrastructure/OrderManagement.Infrastructure/OrderManagement.Infrastructure.csproj", "src/Infrastructure/OrderManagement.Infrastructure/"]
-COPY --chown=appuser:appgroup ["tests/OrderManagement.UnitTests/OrderManagement.UnitTests.csproj", "tests/OrderManagement.UnitTests/"]
-COPY --chown=appuser:appgroup ["tests/OrderManagement.IntegrationTests/OrderManagement.IntegrationTests.csproj", "tests/OrderManagement.IntegrationTests/"]
+COPY --chown=appuser:appgroup --chmod=444 ["OrderManagement.sln", "./"]
+COPY --chown=appuser:appgroup --chmod=444 ["src/API/OrderManagement.API/OrderManagement.API.csproj", "src/API/OrderManagement.API/"]
+COPY --chown=appuser:appgroup --chmod=444 ["src/Application/OrderManagement.Application/OrderManagement.Application.csproj", "src/Application/OrderManagement.Application/"]
+COPY --chown=appuser:appgroup --chmod=444 ["src/Domain/OrderManagement.Domain/OrderManagement.Domain.csproj", "src/Domain/OrderManagement.Domain/"]
+COPY --chown=appuser:appgroup --chmod=444 ["src/Infrastructure/OrderManagement.Infrastructure/OrderManagement.Infrastructure.csproj", "src/Infrastructure/OrderManagement.Infrastructure/"]
+COPY --chown=appuser:appgroup --chmod=444 ["tests/OrderManagement.UnitTests/OrderManagement.UnitTests.csproj", "tests/OrderManagement.UnitTests/"]
+COPY --chown=appuser:appgroup --chmod=444 ["tests/OrderManagement.IntegrationTests/OrderManagement.IntegrationTests.csproj", "tests/OrderManagement.IntegrationTests/"]
+RUN cp -R /source/. /work/ \
+	&& chmod -R u+w /work
 
 # Restore dependencies
+WORKDIR /work
 RUN dotnet restore "OrderManagement.sln"
 
 # Copy application and test source only
-COPY --chown=appuser:appgroup ["src/", "src/"]
-COPY --chown=appuser:appgroup ["tests/", "tests/"]
+WORKDIR /source
+COPY --chown=appuser:appgroup --chmod=555 ["src/", "src/"]
+COPY --chown=appuser:appgroup --chmod=555 ["tests/", "tests/"]
+RUN cp -R /source/src/. /work/src/ \
+	&& cp -R /source/tests/. /work/tests/ \
+	&& chmod -R u+w /work/src /work/tests
+WORKDIR /work
 
 # Create a script to run the analysis
 RUN echo '#!/bin/bash\n\

@@ -64,61 +64,29 @@ OrderManagement.sln
 
 ## Clean Architecture
 
-O projeto adota uma variação prática da Clean Architecture para manter regras de negócio isoladas de detalhes de infraestrutura
+Dependências sempre fluem de fora para dentro — API e Infrastructure dependem apenas de Application e Domain.
 
-- Direcionamento de dependências: camadas externas (API, Infrastructure) dependem de camadas internas (Application, Domain) apenas através de interfaces e DTOs.
-- Domain: contém entidades, agregados, value objects e regras invariantes (métodos que alteram estado interno e validam invariantes). Não conhece EF, controllers ou bibliotecas de infraestrutura.
-- Application: orquestra casos de uso (handlers do MediatR), expõe DTOs e implementa regras de aplicação (validação coordenada, composição de operações). Aqui ficam também os contratos (interfaces) que a Infrastructure implementa.
-- Infrastructure: implementações concretas — EF Core DbContext, repositórios, serviços externos (ex.: clientes HTTP, provedores de fila) e migrações. Isola detalhes de persistência e integrações.
-- API: camada de entrada; compõe dependências, configura middlewares (autenticação, autorização, logging) e mapeia chamadas HTTP para comandos/queries do Application.
-
-Benefícios práticos adotados no projeto:
-
-- Testabilidade: handlers e regras de domínio são testáveis sem depender de infraestrutura.
-- Evolução independente: trocar EF por outro ORM exige mudanças apenas na camada Infrastructure.
-- Clareza de responsabilidades: cada pasta tem propósito óbvio, reduzindo acoplamento.
+| Camada | Responsabilidade |
+|---|---|
+| Domain | Entidades, value objects e regras invariantes — sem dependências externas |
+| Application | Handlers (MediatR), DTOs e contratos implementados pela Infrastructure |
+| Infrastructure | EF Core, repositórios, serviços externos e migrações |
+| API | Composição de dependências, middlewares e mapeamento HTTP → commands/queries |
 
 ## FluentValidation + MediatR (ValidationBehavior)
 
-Validações estão centralizadas com FluentValidation na camada `Application`. Para garantir execução automática e padronizada das validações, o projeto registra um `ValidationBehavior<TRequest,TResponse>` no pipeline do MediatR.
-
-1. Para cada comando/consulta existe um validador (ex.: `CreateOrderCommandValidator`) que implementa regras expressivas (NotEmpty, GreaterThan, MaximumLength, etc.).
-2. O `ValidationBehavior` é um pipeline behavior do MediatR que roda antes do handler: ele resolve todos os validadores aplicáveis ao tipo de requisição e executa as validações.
-3. Em caso de falha, o comportamento interrompe o pipeline e lança uma exceção de validação que é convertida pelo middleware/filtro em uma resposta HTTP 400 com payload estruturado (lista de erros).
-
-Vantagens:
-
-- Validação consistente e centralizada, sem código repetido nos handlers.
-- Mensagens de erro padronizadas (úteis para clientes e para asserts em testes).
-- Facilidade para adicionar novas regras sem tocar handlers.
+Validações centralizadas na camada `Application` via `ValidationBehavior<TRequest,TResponse>` registrado no pipeline do MediatR. Antes de cada handler, o behavior resolve os validadores aplicáveis (ex.: `CreateOrderCommandValidator`) e, em caso de falha, interrompe o pipeline lançando uma exceção convertida em HTTP 400 com lista de erros estruturada — sem código de validação repetido nos handlers.
 
 ## Segurança
 
-A implementação adota as seguintes decisões para proteção de segredos, redução de superfície de ataque e execução segura:
-
-- A chave JWT não é versionada no repositório.
-  - `Jwt__Key` não é mantida em `appsettings.json`, `appsettings.Production.json` nem em arquivos de compose com valor fixo.
-- A aplicação exige `Jwt__Key` fora de `Development` e `Testing`.
-  - Se a chave não estiver configurada, a inicialização falha de forma explícita.
-- Em `Development` e `Testing`, a API gera uma chave JWT efêmera em memória quando necessário.
-  - Isso evita expor segredos reais e mantém o fluxo local e os testes funcionando sem credenciais versionadas.
-- Os Dockerfiles seguem práticas de execução restrita.
-  - As imagens executam com usuário não-root (`appuser`).
-  - O scanner usa `--no-install-recommends` para reduzir pacotes desnecessários.
-  - O build copia apenas `src/` e, quando necessário, `tests/`, reduzindo o risco de incluir arquivos sensíveis no contexto.
-- O contexto Docker é mantido restrito.
-  - `build/.dockerignore` exclui `.env` e artefatos comuns de segredo, como `*.pem`, `*.key`, `*.pfx` e `*.snk`.
+- `Jwt__Key` não está versionada no repositório nem em arquivos de compose com valor fixo.
+- Fora de `Development`/`Testing`, a ausência de `Jwt__Key` interrompe a inicialização de forma explícita.
+- Em `Development`/`Testing`, a API gera uma chave JWT efêmera em memória — sem credenciais versionadas.
+- Os Dockerfiles executam com usuário não-root (`appuser`); o `build/.dockerignore` exclui `.env`, `*.pem`, `*.key`, `*.pfx` e `*.snk`.
 
 ### Como fornecer `Jwt__Key`
 
-Para executar fora de `Development`, configure `Jwt__Key` por variável de ambiente ou em `build/.env` para uso com Docker Compose.
-
-1. Copie `build/.env.example` para `build/.env`.
-2. Defina um valor forte e único para `Jwt__Key`.
-3. Não versione `build/.env`.
-4. Em produção, prefira secret manager ou variável de ambiente do ambiente hospedeiro.
-
-Exemplo:
+Copie `build/.env.example` para `build/.env`, defina um valor forte (mínimo 32 bytes) e não versione o arquivo. Em produção, prefira variável de ambiente ou secret manager.
 
 ```env
 Jwt__Key=gere-um-valor-forte-e-unico-com-pelo-menos-32-bytes
@@ -126,49 +94,23 @@ Jwt__Key=gere-um-valor-forte-e-unico-com-pelo-menos-32-bytes
 
 ## Docker
 
-O repositório inclui arquivos para executar a API e cenários auxiliares em contêineres quando necessário. Use Docker para demonstrar a aplicação em um ambiente isolado ou para integrar com serviços externos (ex.: SonarQube) — para desenvolvimento rápido recomendo os scripts locais (`scripts/run-local.*`).
-
-Principais arquivos:
-
-- `build/Dockerfile` — Dockerfile multi-stage da API com execução non-root e cópia restrita de arquivos.
-- `build/Dockerfile.scanner` — imagem auxiliar para análise com SonarQube, também endurecida para reduzir superfície de ataque.
-- `build/docker-compose.yml` — compose principal; carrega `Jwt__Key` de `build/.env`.
-- `build/docker-compose.sonar.yml` — compose específico para SonarQube e análise de código (opcional).
-
-Uso rápido (exemplos):
-
-Opção A — Build e executar apenas a API em um container:
+| Arquivo | Descrição |
+|---|---|
+| `build/Dockerfile` | Multi-stage, execução non-root |
+| `build/Dockerfile.scanner` | Imagem auxiliar para análise com SonarQube |
+| `build/docker-compose.yml` | Stack principal; carrega `Jwt__Key` de `build/.env` |
+| `build/docker-compose.sonar.yml` | SonarQube + análise (opcional) |
 
 ```powershell
-# a partir da raiz do repositório
-
+# Build e executar a API
 docker build -f build/Dockerfile -t ordermanagement:local .
-
-# Executar a API em um container e mapear a porta 8080 do container para 5180 da máquina
 docker run --rm -p 5180:8080 --env-file build/.env --name ordermanagement ordermanagement:local
 
-# A API ficará disponível em: http://localhost:5180
-```
-
-Opção B — Levantar a stack definida no docker-compose (a partir da raiz do repositório):
-
-```powershell
+# Ou via compose
 docker compose -f build/docker-compose.yml up --build
-
-# Para parar e remover os containers:
-docker compose -f build/docker-compose.yml down
 ```
 
-Opção C — (Opcional) Levantar SonarQube via compose para análise:
-
-```powershell
-# Após a inicialização, a interface do SonarQube estará em http://localhost:9000
-docker compose -f build/docker-compose.sonar.yml up --build
-```
-
-Observação: para desenvolvimento iterativo prefiro `scripts/run-local.ps1` / `scripts/run-local.sh` que iniciam a aplicação com `dotnet run` (sem Docker) — são mais leves e mais rápidos para a maioria das tarefas de desenvolvimento.
-
-Para mais detalhes operacionais, consulte `docs/DOCKER.md`.
+Para desenvolvimento iterativo prefiro `scripts/run-local.*` com `dotnet run` — mais leve e mais rápido. Mais detalhes em `docs/DOCKER.md`.
 
 ## Domínio
 
@@ -364,12 +306,6 @@ GROUP BY Status;
 3. **Clicar com botão direito** > "Open with SQLite Viewer"
 4. **Visualizar** tabelas e dados diretamente no editor
 
-#### **Opção 3: Azure Data Studio / DBeaver**
-
-Alternativas mais robustas que também suportam SQLite:
-- **Azure Data Studio** com extensão SQLite
-- **DBeaver Community Edition**
-
 ---
 
 ## Testes
@@ -468,7 +404,6 @@ A coleção inclui:
 - Configuração automática de autenticação JWT
 - Variáveis de ambiente pré-configuradas
 - Scripts para salvar automaticamente o token e IDs
-- **Geração automática de `customerId` aleatório** a cada criação de pedido
 - Todas as rotas documentadas com exemplos
 
 **Como usar:**
