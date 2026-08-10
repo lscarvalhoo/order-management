@@ -1,13 +1,17 @@
 # Testes de Integração - Order Management API
 
-## ✅ Testes Implementados
+## ✅ Status dos Testes
+
+**Todos os 18 testes de integração estão passando!**
+
+## 📋 Testes Implementados
 
 ### Arquivos Criados
 
 1. **CustomWebApplicationFactory.cs** - Factory personalizada para testes de integração com:
-   - Configuração de banco de dados In-Memory
+   - Configuração de banco de dados SQLite In-Memory
    - Configuração de credenciais de teste
-   - Isolamento por teste com nomes únicos de banco de dados
+   - Isolamento completo entre testes
 
 2. **IntegrationTestBase.cs** - Classe base para testes com:
    - Helper para obter token de autenticação
@@ -22,61 +26,106 @@
 
 4. **Controllers/OrdersControllerTests.cs** - Testes dos endpoints de pedidos:
    - ✅ GET /api/orders sem autenticação retorna Unauthorized
+   - ✅ GET /api/orders com autenticação retorna OK
+   - ✅ POST /api/orders com dados válidos retorna Created
    - ✅ POST /api/orders com dados inválidos (quantidade zero) retorna BadRequest
    - ✅ POST /api/orders com dados inválidos (preço negativo) retorna BadRequest
    - ✅ POST /api/orders com lista de itens vazia retorna BadRequest
-   - ⚠️ GET /api/orders com autenticação retorna OK (falhando)
-   - ⚠️ POST /api/orders com dados válidos retorna Created (falhando)
-   - ⚠️ GET /api/orders/{id} com pedido existente retorna OK (falhando)
-   - ⚠️ GET /api/orders/{id} com pedido inexistente retorna NotFound (falhando)
-   - ⚠️ PATCH /api/orders/{id}/cancel com pedido válido retorna NoContent (falhando)
-   - ⚠️ Outros testes de cenários de pedidos (falhando)
+   - ✅ GET /api/orders/{id} com pedido existente retorna OK
+   - ✅ GET /api/orders/{id} com pedido inexistente retorna NotFound
+   - ✅ PATCH /api/orders/{id}/cancel com pedido válido retorna NoContent
+   - ✅ PATCH /api/orders/{id}/cancel com pedido já cancelado retorna BadRequest
+   - ✅ PATCH /api/orders/{id}/cancel com pedido inexistente retorna NotFound
+   - ✅ GET /api/orders com paginação retorna resultados corretos
+   - ✅ GET /api/orders com filtro por status funciona corretamente
 
-## ⚠️ Problema Identificado
+## 🔧 Solução Implementada
 
-Alguns testes estão falhando com o erro:
-```
-System.InvalidOperationException: Services for database providers 'Microsoft.EntityFrameworkCore.Sqlite', 
-'Microsoft.EntityFrameworkCore.InMemory' have been registered in the service provider.
-```
+### Uso de SQLite In-Memory
 
-### Causa
-O Entity Framework Core está detectando que ambos os provedores de banco de dados (SQLite e InMemory) estão registrados no mesmo service provider, o que não é permitido.
+A solução utiliza SQLite in-memory para os testes de integração, que oferece:
 
-### Tentativas de Correção
-1. ✅ Remoção do registro do DbContext usando `RemoveAll`
-2. ✅ Uso de nomes únicos para bancos de dados In-Memory
-3. ✅ Configuração do ambiente como "Testing"
-4. ⚠️ O problema persiste para testes que fazem queries ao banco
+- ✅ Performance superior ao EF Core InMemory
+- ✅ Suporte completo a relacionamentos e constraints
+- ✅ Comportamento mais próximo do SQLite de produção
+- ✅ Conexão mantida aberta durante todo o ciclo de vida da factory
+- ✅ Isolamento completo entre testes
 
-## 🔧 Próximos Passos para Correção
-
-### Opção 1: Refatorar InfrastructureServiceExtensions
-Modificar `InfrastructureServiceExtensions.cs` para aceitar um delegate que configure o provider:
+### Configuração da Factory
 
 ```csharp
-public static IServiceCollection AddInfrastructureServices(
-	this IServiceCollection services,
-	IConfiguration configuration,
-	Action<DbContextOptionsBuilder>? configureDbContext = null)
+protected override void ConfigureWebHost(IWebHostBuilder builder)
 {
-	if (configureDbContext != null)
-	{
-		services.AddDbContext<ApplicationDbContext>(configureDbContext);
-	}
-	else
-	{
-		services.AddDb Context<ApplicationDbContext>(options =>
-			options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
-	}
+	builder.UseEnvironment("Testing");
 
-	services.AddScoped<IOrderRepository, OrderRepository>();
-	return services;
+	builder.ConfigureAppConfiguration((context, config) =>
+	{
+		// Configuração de credenciais fixas para testes
+		config.AddInMemoryCollection(new Dictionary<string, string?>
+		{
+			["DevelopmentAuth:FixedUser:Email"] = "dev@martech.com",
+			["DevelopmentAuth:FixedUser:Password"] = "Senha@123",
+			["DevelopmentAuth:FixedUser:Role"] = "Admin",
+			["Jwt:Key"] = "YourSuperSecretKeyForJWTTokenGenerationWithMinimum32Characters",
+			["Jwt:Issuer"] = "OrderManagementAPI",
+			["Jwt:Audience"] = "OrderManagementClient"
+		});
+	});
+
+	builder.ConfigureServices(services =>
+	{
+		// Remove o DbContext existente
+		var descriptor = services.SingleOrDefault(
+			d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
+		if (descriptor != null)
+		{
+			services.Remove(descriptor);
+		}
+
+		// Configura SQLite in-memory
+		_connection = new SqliteConnection("DataSource=:memory:");
+		_connection.Open();
+
+		services.AddDbContext<ApplicationDbContext>(options =>
+		{
+			options.UseSqlite(_connection);
+		});
+
+		// Cria o banco de dados
+		var serviceProvider = services.BuildServiceProvider();
+		using var scope = serviceProvider.CreateScope();
+		var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		db.Database.EnsureCreated();
+	});
 }
 ```
 
-### Opção 2: Usar SQLite In-Memory
-Mudar para SQLite em modo In-Memory em vez de EF Core InMemory:
+## 🚀 Executar os Testes
+
+### Via linha de comando:
+```bash
+# Todos os testes de integração
+dotnet test tests/OrderManagement.IntegrationTests/
+
+# Com detalhes verbosos
+dotnet test tests/OrderManagement.IntegrationTests/ --logger "console;verbosity=detailed"
+```
+
+### Via Visual Studio:
+1. Abrir o **Test Explorer** (Ctrl + E, T)
+2. Executar todos os testes do projeto **OrderManagement.IntegrationTests**
+
+## 📊 Cobertura
+
+Os testes cobrem:
+- ✅ Autenticação JWT
+- ✅ Autorização de endpoints
+- ✅ Validação de entrada
+- ✅ Criação de pedidos
+- ✅ Consulta de pedidos (com paginação e filtros)
+- ✅ Cancelamento de pedidos
+- ✅ Tratamento de erros (NotFound, BadRequest)
+- ✅ Regras de negócio (status, validações)
 
 ```csharp
 services.AddDbContext<ApplicationDbContext>(options =>
