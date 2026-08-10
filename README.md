@@ -8,6 +8,7 @@ API REST para gerenciamento de pedidos, construída com .NET 10 seguindo os prin
 
 - [Stack](#stack)
 - [Arquitetura](#arquitetura)
+- [Segurança](#segurança)
 - [Domínio](#domínio)
 - [Como Executar](#como-executar)
 - [Banco de Dados](#banco-de-dados)
@@ -81,8 +82,6 @@ Benefícios práticos adotados no projeto:
 
 Validações estão centralizadas com FluentValidation na camada `Application`. Para garantir execução automática e padronizada das validações, o projeto registra um `ValidationBehavior<TRequest,TResponse>` no pipeline do MediatR.
 
-Como funciona na prática:
-
 1. Para cada comando/consulta existe um validador (ex.: `CreateOrderCommandValidator`) que implementa regras expressivas (NotEmpty, GreaterThan, MaximumLength, etc.).
 2. O `ValidationBehavior` é um pipeline behavior do MediatR que roda antes do handler: ele resolve todos os validadores aplicáveis ao tipo de requisição e executa as validações.
 3. Em caso de falha, o comportamento interrompe o pipeline e lança uma exceção de validação que é convertida pelo middleware/filtro em uma resposta HTTP 400 com payload estruturado (lista de erros).
@@ -93,15 +92,48 @@ Vantagens:
 - Mensagens de erro padronizadas (úteis para clientes e para asserts em testes).
 - Facilidade para adicionar novas regras sem tocar handlers.
 
-## Docker — Dockerfile e docker-compose
+## Segurança
 
-O repositório inclui arquivos para executar a API e cenários auxiliares em contêineres quando necessário. Use Docker para demonstrar a aplicação em um ambiente isolado ou para integrar com serviços externos (ex.: SonarQube) — para desenvolvimento rápido recomendamos os scripts locais (`scripts/run-local.*`).
+A implementação adota as seguintes decisões para proteção de segredos, redução de superfície de ataque e execução segura:
+
+- A chave JWT não é versionada no repositório.
+  - `Jwt__Key` não é mantida em `appsettings.json`, `appsettings.Production.json` nem em arquivos de compose com valor fixo.
+- A aplicação exige `Jwt__Key` fora de `Development` e `Testing`.
+  - Se a chave não estiver configurada, a inicialização falha de forma explícita.
+- Em `Development` e `Testing`, a API gera uma chave JWT efêmera em memória quando necessário.
+  - Isso evita expor segredos reais e mantém o fluxo local e os testes funcionando sem credenciais versionadas.
+- Os Dockerfiles seguem práticas de execução restrita.
+  - As imagens executam com usuário não-root (`appuser`).
+  - O scanner usa `--no-install-recommends` para reduzir pacotes desnecessários.
+  - O build copia apenas `src/` e, quando necessário, `tests/`, reduzindo o risco de incluir arquivos sensíveis no contexto.
+- O contexto Docker é mantido restrito.
+  - `build/.dockerignore` exclui `.env` e artefatos comuns de segredo, como `*.pem`, `*.key`, `*.pfx` e `*.snk`.
+
+### Como fornecer `Jwt__Key`
+
+Para executar fora de `Development`, configure `Jwt__Key` por variável de ambiente ou em `build/.env` para uso com Docker Compose.
+
+1. Copie `build/.env.example` para `build/.env`.
+2. Defina um valor forte e único para `Jwt__Key`.
+3. Não versione `build/.env`.
+4. Em produção, prefira secret manager ou variável de ambiente do ambiente hospedeiro.
+
+Exemplo:
+
+```env
+Jwt__Key=gere-um-valor-forte-e-unico-com-pelo-menos-32-bytes
+```
+
+## Docker
+
+O repositório inclui arquivos para executar a API e cenários auxiliares em contêineres quando necessário. Use Docker para demonstrar a aplicação em um ambiente isolado ou para integrar com serviços externos (ex.: SonarQube) — para desenvolvimento rápido recomendo os scripts locais (`scripts/run-local.*`).
 
 Principais arquivos:
 
-- `src/API/OrderManagement.API/Dockerfile` — Dockerfile multi-stage para construir a imagem da API com .NET 10.
-- `build/docker-compose.yml` — Compose para levantar a stack de desenvolvimento (quando aplicável).
-- `build/docker-compose.sonar.yml` — Compose específico para SonarQube e análise de código (opcional).
+- `build/Dockerfile` — Dockerfile multi-stage da API com execução non-root e cópia restrita de arquivos.
+- `build/Dockerfile.scanner` — imagem auxiliar para análise com SonarQube, também endurecida para reduzir superfície de ataque.
+- `build/docker-compose.yml` — compose principal; carrega `Jwt__Key` de `build/.env`.
+- `build/docker-compose.sonar.yml` — compose específico para SonarQube e análise de código (opcional).
 
 Uso rápido (exemplos):
 
@@ -109,13 +141,11 @@ Opção A — Build e executar apenas a API em um container:
 
 ```powershell
 # a partir da raiz do repositório
-cd src/API/OrderManagement.API
 
-# Build da imagem
-docker build -t ordermanagement:local .
+docker build -f build/Dockerfile -t ordermanagement:local .
 
-# Executar a API em um container e mapear a porta 80 do container para 5180 da máquina
-docker run --rm -p 5180:80 --name ordermanagement ordermanagement:local
+# Executar a API em um container e mapear a porta 8080 do container para 5180 da máquina
+docker run --rm -p 5180:8080 --env-file build/.env --name ordermanagement ordermanagement:local
 
 # A API ficará disponível em: http://localhost:5180
 ```
@@ -136,8 +166,9 @@ Opção C — (Opcional) Levantar SonarQube via compose para análise:
 docker compose -f build/docker-compose.sonar.yml up --build
 ```
 
-Observação: para desenvolvimento iterativo preferimos `scripts/run-local.ps1` / `scripts/run-local.sh` que iniciam a aplicação com `dotnet run` (sem Docker) — são mais leves e mais rápidos para a maioria das tarefas de desenvolvimento.
+Observação: para desenvolvimento iterativo prefiro `scripts/run-local.ps1` / `scripts/run-local.sh` que iniciam a aplicação com `dotnet run` (sem Docker) — são mais leves e mais rápidos para a maioria das tarefas de desenvolvimento.
 
+Para mais detalhes operacionais, consulte `docs/DOCKER.md`.
 
 ## Domínio
 
@@ -429,7 +460,7 @@ SONAR_TOKEN=seu_token ./scripts/sonar.sh analyze
 
 ### Coleção do Postman
 
-Para facilitar o teste da API, disponibilizamos uma coleção completa do Postman:
+Para facilitar o teste da API, disponibilizo uma coleção completa do Postman:
 
 **📦 [OrderManagement.postman_collection.json](./OrderManagement.postman_collection.json)**
 
@@ -477,10 +508,10 @@ A coleção inclui:
 | Método | Rota | Auth | Descrição |
 |---|---|---|---|
 | `POST` | `/api/auth/login` | — | Autenticação, retorna JWT |
-| `GET` | `/api/orders` | ✓ | Lista pedidos com paginação |
-| `GET` | `/api/orders/{id}` | ✓ | Busca pedido por ID |
-| `POST` | `/api/orders` | ✓ | Cria um novo pedido |
-| `PATCH` | `/api/orders/{id}/cancel` | ✓ | Cancela um pedido |
+| `GET` | `/api/orders` | Sim | Lista pedidos com paginação |
+| `GET` | `/api/orders/{id}` | Sim | Busca pedido por ID |
+| `POST` | `/api/orders` | Sim | Cria um novo pedido |
+| `PATCH` | `/api/orders/{id}/cancel` | Sim | Cancela um pedido |
 
 ---
 

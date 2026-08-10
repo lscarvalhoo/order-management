@@ -1,4 +1,4 @@
-# OpenTelemetry Implementation
+﻿# OpenTelemetry Implementation
 
 ## Overview
 
@@ -6,7 +6,7 @@ This project implements OpenTelemetry for distributed tracing with console expor
 
 ## Features
 
-### 📊 Instrumentation
+### ðŸ“Š Instrumentation
 
 1. **ASP.NET Core Instrumentation**
    - Automatic tracing of HTTP requests
@@ -146,11 +146,11 @@ To switch exporters, simply replace `.AddConsoleExporter()` with the desired exp
 
 ## Benefits
 
-✅ **Observability**: Full visibility into request flow  
-✅ **Performance**: Identify bottlenecks and slow operations  
-✅ **Debugging**: Trace errors through the entire stack  
-✅ **Monitoring**: Track application health and behavior  
-✅ **Standardization**: Industry-standard telemetry format
+âœ… **Observability**: Full visibility into request flow  
+âœ… **Performance**: Identify bottlenecks and slow operations  
+âœ… **Debugging**: Trace errors through the entire stack  
+âœ… **Monitoring**: Track application health and behavior  
+âœ… **Standardization**: Industry-standard telemetry format
 
 ## Running the Application
 
@@ -165,3 +165,5 @@ Trace data will be exported to the console automatically.
 ## Testing
 
 All unit tests continue to pass (99/99) with OpenTelemetry enabled. The telemetry code uses conditional operators (`?.`) to safely handle null activities during testing.
+
+

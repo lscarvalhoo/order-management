@@ -1,164 +1,166 @@
-# Documentação do Order Management API
+﻿# DocumentaÃ§Ã£o do Order Management API
 
-Esta pasta contém toda a documentação técnica do projeto Order Management API.
+Esta pasta contÃ©m toda a documentaÃ§Ã£o tÃ©cnica do projeto Order Management API.
 
-## Índice de Documentação
+## Ãndice de DocumentaÃ§Ã£o
 
 ### Docker
 
-- **[DOCKER.md](DOCKER.md)** - Documentação completa do Docker
-  - Pré-requisitos e instalação
+- **[DOCKER.md](DOCKER.md)** - DocumentaÃ§Ã£o completa do Docker
+  - PrÃ©-requisitos e instalaÃ§Ã£o
   - Estrutura de arquivos
-  - Configuração detalhada
-  - Comandos úteis
+  - ConfiguraÃ§Ã£o detalhada
+  - Comandos Ãºteis
   - Troubleshooting
-  - Guia de produção
+  - Guia de produÃ§Ã£o
 
-- **[DOCKER_QUICKSTART.md](DOCKER_QUICKSTART.md)** - Guia rápido de início
+- **[DOCKER_QUICKSTART.md](DOCKER_QUICKSTART.md)** - Guia rÃ¡pido de inÃ­cio
   - Comandos essenciais (Windows/Linux)
   - URLs de acesso
   - Troubleshooting comum
 
-- **[DOCKER_EXAMPLES.md](DOCKER_EXAMPLES.md)** - Exemplos práticos
-  - 12 cenários de uso
+- **[DOCKER_EXAMPLES.md](DOCKER_EXAMPLES.md)** - Exemplos prÃ¡ticos
+  - 12 cenÃ¡rios de uso
   - Comandos completos
   - Monitoramento e debugging
   - Deploy e backup
 
-- **[DOCKER_CHECKLIST.md](DOCKER_CHECKLIST.md)** - Checklist de implementação
+- **[DOCKER_CHECKLIST.md](DOCKER_CHECKLIST.md)** - Checklist de implementaÃ§Ã£o
   - Lista de arquivos criados
   - Recursos implementados
-  - Validação de funcionalidades
+  - ValidaÃ§Ã£o de funcionalidades
 
-- **[DOCKER_IMPLEMENTATION_SUMMARY.md](DOCKER_IMPLEMENTATION_SUMMARY.md)** - Sumário completo
-  - Resumo da implementação
-  - Estatísticas
+- **[DOCKER_IMPLEMENTATION_SUMMARY.md](DOCKER_IMPLEMENTATION_SUMMARY.md)** - SumÃ¡rio completo
+  - Resumo da implementaÃ§Ã£o
+  - EstatÃ­sticas
   - Status final
 
-### Autenticação e Segurança
+### AutenticaÃ§Ã£o e SeguranÃ§a
 
-- **[AUTH.md](AUTH.md)** - Documentação de autenticação
+- **[AUTH.md](AUTH.md)** - DocumentaÃ§Ã£o de autenticaÃ§Ã£o
   - JWT Bearer Token
-  - Endpoints de autenticação
+  - Endpoints de autenticaÃ§Ã£o
   - Exemplos de uso
 
-- **[AUTH_IMPLEMENTATION.md](AUTH_IMPLEMENTATION.md)** - Detalhes de implementação
-  - Configuração JWT
-  - Validação de tokens
-  - Renovação de tokens
+- **[AUTH_IMPLEMENTATION.md](AUTH_IMPLEMENTATION.md)** - Detalhes de implementaÃ§Ã£o
+  - ConfiguraÃ§Ã£o JWT
+  - ValidaÃ§Ã£o de tokens
+  - RenovaÃ§Ã£o de tokens
 
-- **[SECURITY.md](SECURITY.md)** - Guia de segurança
-  - Boas práticas
-  - Políticas de segurança
+- **[SECURITY.md](SECURITY.md)** - Guia de seguranÃ§a
+  - Boas prÃ¡ticas
+  - PolÃ­ticas de seguranÃ§a
   - Vulnerabilidades conhecidas
 
 ### Observabilidade
 
-- **[OPENTELEMETRY.md](OPENTELEMETRY.md)** - Documentação do OpenTelemetry
-  - Instrumentação
-  - Configuração
+- **[OPENTELEMETRY.md](OPENTELEMETRY.md)** - DocumentaÃ§Ã£o do OpenTelemetry
+  - InstrumentaÃ§Ã£o
+  - ConfiguraÃ§Ã£o
   - Spans customizados
   - Console export
 
 - **[OPENTELEMETRY_OUTPUT.md](OPENTELEMETRY_OUTPUT.md)** - Exemplos de output
-  - Traces de criação de pedidos
+  - Traces de criaÃ§Ã£o de pedidos
   - Traces de cancelamento
   - Hierarquia de spans
 
-### Análise de Código
+### AnÃ¡lise de CÃ³digo
 
 - **[SONARQUBE.md](SONARQUBE.md)** - SonarQube Configuration
-  - Instalação e configuração
+  - InstalaÃ§Ã£o e configuraÃ§Ã£o
   - Comandos helper (sonar.sh/sonar.ps1)
-  - Execução de análises
-  - Métricas e relatórios
-  - Integração CI/CD
+  - ExecuÃ§Ã£o de anÃ¡lises
+  - MÃ©tricas e relatÃ³rios
+  - IntegraÃ§Ã£o CI/CD
   - Troubleshooting
 
 ###  Outros
 
-- **[REFACTORING_SUMMARY.md](REFACTORING_SUMMARY.md)** - Histórico de refatorações
-  - Mudanças realizadas
+- **[REFACTORING_SUMMARY.md](REFACTORING_SUMMARY.md)** - HistÃ³rico de refatoraÃ§Ãµes
+  - MudanÃ§as realizadas
   - Melhorias implementadas
-  - Lições aprendidas
+  - LiÃ§Ãµes aprendidas
 
-## 🚀 Quick Links
+## ðŸš€ Quick Links
 
-### Para Começar
-1. [Docker Quick Start](DOCKER_QUICKSTART.md) - Subir a aplicação em 30 segundos
-2. [Autenticação](AUTH.md) - Fazer login e obter token
-3. [README Principal](../README.md) - Visão geral do projeto
+### Para ComeÃ§ar
+1. [Docker Quick Start](DOCKER_QUICKSTART.md) - Subir a aplicaÃ§Ã£o em 30 segundos
+2. [AutenticaÃ§Ã£o](AUTH.md) - Fazer login e obter token
+3. [README Principal](../README.md) - VisÃ£o geral do projeto
 
 ### Para Desenvolvedores
-1. [Exemplos Docker](DOCKER_EXAMPLES.md) - Cenários práticos
+1. [Exemplos Docker](DOCKER_EXAMPLES.md) - CenÃ¡rios prÃ¡ticos
 2. [OpenTelemetry](OPENTELEMETRY.md) - Rastreamento e observabilidade
-3. [Segurança](SECURITY.md) - Práticas de segurança
+3. [SeguranÃ§a](SECURITY.md) - PrÃ¡ticas de seguranÃ§a
 
 ### Para DevOps
-1. [Guia Docker Completo](DOCKER.md) - Deploy e configuração
-2. [Checklist Docker](DOCKER_CHECKLIST.md) - Validação
-3. [Implementação Docker](DOCKER_IMPLEMENTATION_SUMMARY.md) - Sumário técnico
+1. [Guia Docker Completo](DOCKER.md) - Deploy e configuraÃ§Ã£o
+2. [Checklist Docker](DOCKER_CHECKLIST.md) - ValidaÃ§Ã£o
+3. [ImplementaÃ§Ã£o Docker](DOCKER_IMPLEMENTATION_SUMMARY.md) - SumÃ¡rio tÃ©cnico
 
-## Estrutura da Documentação
+## Estrutura da DocumentaÃ§Ã£o
 
 ```
 docs/
-├── README.md                              (este arquivo)
-├── DOCKER.md                              (5000+ palavras)
-├── DOCKER_QUICKSTART.md                   (guia rápido)
-├── DOCKER_EXAMPLES.md                     (12 cenários)
-├── DOCKER_CHECKLIST.md                    (validação)
-├── DOCKER_IMPLEMENTATION_SUMMARY.md       (sumário)
-├── AUTH.md                                (autenticação)
-├── AUTH_IMPLEMENTATION.md                 (implementação auth)
-├── SECURITY.md                            (segurança)
-├── OPENTELEMETRY.md                       (observabilidade)
-├── OPENTELEMETRY_OUTPUT.md                (exemplos traces)
-└── REFACTORING_SUMMARY.md                 (histórico)
+â”œâ”€â”€ README.md                              (este arquivo)
+â”œâ”€â”€ DOCKER.md                              (5000+ palavras)
+â”œâ”€â”€ DOCKER_QUICKSTART.md                   (guia rÃ¡pido)
+â”œâ”€â”€ DOCKER_EXAMPLES.md                     (12 cenÃ¡rios)
+â”œâ”€â”€ DOCKER_CHECKLIST.md                    (validaÃ§Ã£o)
+â”œâ”€â”€ DOCKER_IMPLEMENTATION_SUMMARY.md       (sumÃ¡rio)
+â”œâ”€â”€ AUTH.md                                (autenticaÃ§Ã£o)
+â”œâ”€â”€ AUTH_IMPLEMENTATION.md                 (implementaÃ§Ã£o auth)
+â”œâ”€â”€ SECURITY.md                            (seguranÃ§a)
+â”œâ”€â”€ OPENTELEMETRY.md                       (observabilidade)
+â”œâ”€â”€ OPENTELEMETRY_OUTPUT.md                (exemplos traces)
+â””â”€â”€ REFACTORING_SUMMARY.md                 (histÃ³rico)
 ```
 
-## Navegação Rápida por Tarefa
+## NavegaÃ§Ã£o RÃ¡pida por Tarefa
 
-### Quero executar a aplicação
-→ [DOCKER_QUICKSTART.md](DOCKER_QUICKSTART.md)
+### Quero executar a aplicaÃ§Ã£o
+â†’ [DOCKER_QUICKSTART.md](DOCKER_QUICKSTART.md)
 
 ### Quero entender como funciona o Docker
-→ [DOCKER.md](DOCKER.md)
+â†’ [DOCKER.md](DOCKER.md)
 
-### Quero ver exemplos práticos
-→ [DOCKER_EXAMPLES.md](DOCKER_EXAMPLES.md)
+### Quero ver exemplos prÃ¡ticos
+â†’ [DOCKER_EXAMPLES.md](DOCKER_EXAMPLES.md)
 
-### Quero fazer autenticação
-→ [AUTH.md](AUTH.md)
+### Quero fazer autenticaÃ§Ã£o
+â†’ [AUTH.md](AUTH.md)
 
 ### Quero entender o OpenTelemetry
-→ [OPENTELEMETRY.md](OPENTELEMETRY.md)
+â†’ [OPENTELEMETRY.md](OPENTELEMETRY.md)
 
-### Quero validar minha implementação
-→ [DOCKER_CHECKLIST.md](DOCKER_CHECKLIST.md)
+### Quero validar minha implementaÃ§Ã£o
+â†’ [DOCKER_CHECKLIST.md](DOCKER_CHECKLIST.md)
 
-### Quero configurações de segurança
-→ [SECURITY.md](SECURITY.md)
+### Quero configuraÃ§Ãµes de seguranÃ§a
+â†’ [SECURITY.md](SECURITY.md)
 
-## Contribuindo com a Documentação
+## Contribuindo com a DocumentaÃ§Ã£o
 
-Ao adicionar nova documentação:
+Ao adicionar nova documentaÃ§Ã£o:
 1. Coloque arquivos `.md` nesta pasta `docs/`
 2. Atualize este `README.md` com o novo arquivo
-3. Mantenha o padrão de nomenclatura
-4. Use emojis para facilitar identificação
+3. Mantenha o padrÃ£o de nomenclatura
+4. Use emojis para facilitar identificaÃ§Ã£o
 5. Inclua links entre documentos relacionados
 
-## Links Úteis
+## Links Ãšteis
 
 - [README Principal](../README.md)
-- [Código Fonte](../src/)
+- [CÃ³digo Fonte](../src/)
 - [Testes](../tests/)
 - [Scripts](../scripts/) (docker.sh, docker.ps1, sonar.sh, sonar.ps1)
-- [Configurações Build](../build/) (Docker Compose, Dockerfiles, SonarQube)
+- [ConfiguraÃ§Ãµes Build](../build/) (Docker Compose, Dockerfiles, SonarQube)
 
 ---
 
-**Última atualização:** Janeiro 2024  
-**Versão da API:** 1.0.0  
+**Ãšltima atualizaÃ§Ã£o:** Janeiro 2024  
+**VersÃ£o da API:** 1.0.0  
 **Framework:** .NET 10
+
+

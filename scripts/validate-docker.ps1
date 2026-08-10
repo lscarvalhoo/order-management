@@ -11,10 +11,10 @@ Write-Host ""
 function Test-Docker {
 	Write-Host "Checking Docker installation... " -NoNewline
 	if (Get-Command docker -ErrorAction SilentlyContinue) {
-		Write-Host "✓" -ForegroundColor Green
+		Write-Host "OK" -ForegroundColor Green
 		docker --version
 	} else {
-		Write-Host "✗" -ForegroundColor Red
+		Write-Host "ERROR" -ForegroundColor Red
 		Write-Host "Docker is not installed!" -ForegroundColor Red
 		exit 1
 	}
@@ -24,15 +24,15 @@ function Test-Docker {
 function Test-DockerCompose {
 	Write-Host "Checking Docker Compose installation... " -NoNewline
 	if (Get-Command docker-compose -ErrorAction SilentlyContinue) {
-		Write-Host "✓" -ForegroundColor Green
+		Write-Host "OK" -ForegroundColor Green
 		docker-compose --version
 	} else {
 		$composeCheck = docker compose version 2>$null
 		if ($composeCheck) {
-			Write-Host "✓" -ForegroundColor Green
+			Write-Host "OK" -ForegroundColor Green
 			docker compose version
 		} else {
-			Write-Host "✗" -ForegroundColor Red
+			Write-Host "ERROR" -ForegroundColor Red
 			Write-Host "Docker Compose is not installed!" -ForegroundColor Red
 			exit 1
 		}
@@ -57,9 +57,9 @@ function Test-RequiredFiles {
 	foreach ($file in $files) {
 		Write-Host "  - $file... " -NoNewline
 		if (Test-Path $file) {
-			Write-Host "✓" -ForegroundColor Green
+			Write-Host "OK" -ForegroundColor Green
 		} else {
-			Write-Host "✗" -ForegroundColor Red
+			Write-Host "ERROR" -ForegroundColor Red
 			$allFound = $false
 		}
 	}
@@ -74,7 +74,7 @@ function Test-RequiredFiles {
 function Build-DockerImage {
 	Write-Host "Building Docker image..." -ForegroundColor Yellow
 	docker-compose build --no-cache
-	Write-Host "✓ Build successful" -ForegroundColor Green
+	Write-Host "OK Build successful" -ForegroundColor Green
 	Write-Host ""
 }
 
@@ -83,7 +83,7 @@ function Start-DockerServices {
 	New-Item -ItemType Directory -Force -Path "data" | Out-Null
 	New-Item -ItemType Directory -Force -Path "logs" | Out-Null
 	docker-compose up -d
-	Write-Host "✓ Services started" -ForegroundColor Green
+	Write-Host "OK Services started" -ForegroundColor Green
 	Write-Host ""
 }
 
@@ -96,7 +96,7 @@ function Wait-ForHealth {
 		try {
 			$response = Invoke-WebRequest -Uri "http://localhost:5000/health" -UseBasicParsing -TimeoutSec 5
 			if ($response.StatusCode -eq 200) {
-				Write-Host " ✓" -ForegroundColor Green
+				Write-Host " OK" -ForegroundColor Green
 				return $true
 			}
 		} catch {
@@ -106,7 +106,7 @@ function Wait-ForHealth {
 		}
 	}
 
-	Write-Host " ✗" -ForegroundColor Red
+	Write-Host " ERROR" -ForegroundColor Red
 	Write-Host "API failed to become healthy after $maxAttempts attempts" -ForegroundColor Red
 	docker-compose logs api
 	return $false
@@ -120,10 +120,10 @@ function Test-Endpoints {
 	try {
 		$response = Invoke-WebRequest -Uri "http://localhost:5000/health" -UseBasicParsing
 		if ($response.StatusCode -eq 200) {
-			Write-Host "✓" -ForegroundColor Green
+			Write-Host "OK" -ForegroundColor Green
 		}
 	} catch {
-		Write-Host "✗" -ForegroundColor Red
+		Write-Host "ERROR" -ForegroundColor Red
 		return $false
 	}
 
@@ -132,10 +132,10 @@ function Test-Endpoints {
 	try {
 		$response = Invoke-WebRequest -Uri "http://localhost:5000/swagger/index.html" -UseBasicParsing
 		if ($response.StatusCode -eq 200) {
-			Write-Host "✓" -ForegroundColor Green
+			Write-Host "OK" -ForegroundColor Green
 		}
 	} catch {
-		Write-Host "✗" -ForegroundColor Red
+		Write-Host "ERROR" -ForegroundColor Red
 		return $false
 	}
 
@@ -153,12 +153,12 @@ function Test-Endpoints {
 			-ContentType "application/json"
 
 		if ($response.token) {
-			Write-Host "✓" -ForegroundColor Green
+			Write-Host "OK" -ForegroundColor Green
 			$token = $response.token
 			Write-Host "    Token received: $($token.Substring(0, [Math]::Min(50, $token.Length)))..."
 		}
 	} catch {
-		Write-Host "✗" -ForegroundColor Red
+		Write-Host "ERROR" -ForegroundColor Red
 		Write-Host $_.Exception.Message
 		return $false
 	}
@@ -188,11 +188,11 @@ function Test-Endpoints {
 			-Headers $headers
 
 		if ($response.id) {
-			Write-Host "✓" -ForegroundColor Green
+			Write-Host "OK" -ForegroundColor Green
 			Write-Host "    Order created: $($response.id)"
 		}
 	} catch {
-		Write-Host "✗" -ForegroundColor Red
+		Write-Host "ERROR" -ForegroundColor Red
 		Write-Host $_.Exception.Message
 		return $false
 	}
@@ -206,18 +206,18 @@ function Test-Volumes {
 
 	Write-Host "  - Database file... " -NoNewline
 	if (Test-Path "data/ordermanagement.db") {
-		Write-Host "✓" -ForegroundColor Green
+		Write-Host "OK" -ForegroundColor Green
 		Get-Item "data/ordermanagement.db" | Format-Table Name, Length, LastWriteTime
 	} else {
-		Write-Host "✗" -ForegroundColor Red
+		Write-Host "ERROR" -ForegroundColor Red
 	}
 
 	Write-Host "  - Log files... " -NoNewline
 	if ((Test-Path "logs") -and (Get-ChildItem "logs").Count -gt 0) {
-		Write-Host "✓" -ForegroundColor Green
+		Write-Host "OK" -ForegroundColor Green
 		Get-ChildItem "logs" | Format-Table Name, Length, LastWriteTime
 	} else {
-		Write-Host "⚠ (no logs yet)" -ForegroundColor Yellow
+		Write-Host "WARNING (no logs yet)" -ForegroundColor Yellow
 	}
 
 	Write-Host ""
@@ -230,10 +230,10 @@ function Test-Logs {
 	$errors = $logs | Select-String -Pattern "error" -SimpleMatch
 
 	if ($errors) {
-		Write-Host "⚠ Found error messages in logs:" -ForegroundColor Yellow
+		Write-Host "WARNING: Found error messages in logs:" -ForegroundColor Yellow
 		$errors | ForEach-Object { Write-Host $_.Line }
 	} else {
-		Write-Host "✓ No errors found in logs" -ForegroundColor Green
+		Write-Host "OK No errors found in logs" -ForegroundColor Green
 	}
 
 	Write-Host ""
@@ -244,7 +244,7 @@ function Show-Summary {
 	Write-Host "║              Validation Summary                        ║" -ForegroundColor Blue
 	Write-Host "╚════════════════════════════════════════════════════════╝" -ForegroundColor Blue
 	Write-Host ""
-	Write-Host "✓ All checks passed successfully!" -ForegroundColor Green
+	Write-Host "OK All checks passed successfully!" -ForegroundColor Green
 	Write-Host ""
 	Write-Host "Service URLs:"
 	Write-Host "  - API:     http://localhost:5000"
@@ -262,7 +262,7 @@ function Show-Summary {
 function Stop-DockerServices {
 	Write-Host "Cleaning up..." -ForegroundColor Yellow
 	docker-compose down
-	Write-Host "✓ Cleanup complete" -ForegroundColor Green
+	Write-Host "OK Cleanup complete" -ForegroundColor Green
 	Write-Host ""
 }
 

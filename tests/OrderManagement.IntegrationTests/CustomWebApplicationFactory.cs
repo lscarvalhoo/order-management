@@ -24,7 +24,6 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 ["DevelopmentAuth:FixedUser:Email"] = "dev@martech.com",
                 ["DevelopmentAuth:FixedUser:Password"] = "Senha@123",
                 ["DevelopmentAuth:FixedUser:Role"] = "Admin",
-                ["Jwt:Key"] = "YourSuperSecretKeyForJWTTokenGenerationWithMinimum32Characters",
                 ["Jwt:Issuer"] = "OrderManagementAPI",
                 ["Jwt:Audience"] = "OrderManagementClient"
             });

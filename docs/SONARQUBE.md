@@ -1,15 +1,15 @@
-# SonarQube Configuration - Order Management API
+﻿# SonarQube Configuration - Order Management API
 
-Esta documentação descreve como configurar e usar o SonarQube para análise de código do projeto Order Management API.
+Esta documentaÃ§Ã£o descreve como configurar e usar o SonarQube para anÃ¡lise de cÃ³digo do projeto Order Management API.
 
-## 📋 Pré-requisitos
+## PrÃ©-requisitos
 
 - Docker 20.10+
 - Docker Compose v2.0+
-- 4GB de RAM disponível para o SonarQube
-- SonarQube Token (gerado após iniciar o SonarQube)
+- 4GB de RAM disponÃ­vel para o SonarQube
+- SonarQube Token (gerado apÃ³s iniciar o SonarQube)
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Iniciar o SonarQube
 
@@ -36,13 +36,13 @@ Aguarde ~60 segundos para o SonarQube inicializar completamente.
 ### 3. Criar Token
 
 ```bash
-.\sonar.ps1 token     # Windows - Ver instruções
-./sonar.sh token      # Linux - Ver instruções
+.\sonar.ps1 token     # Windows - Ver instruÃ§Ãµes
+./sonar.sh token      # Linux - Ver instruÃ§Ãµes
 ```
 
-Acesse http://localhost:9000 e siga as instruções para criar o token.
+Acesse http://localhost:9000 e siga as instruÃ§Ãµes para criar o token.
 
-### 4. Executar Análise
+### 4. Executar AnÃ¡lise
 
 **Windows:**
 ```powershell
@@ -55,20 +55,20 @@ $env:SONAR_TOKEN="seu_token_aqui"
 SONAR_TOKEN=seu_token_aqui ./sonar.sh analyze
 ```
 
-## 📁 Estrutura de Arquivos
+## Estrutura de Arquivos
 
 ```
 order-management/
-├── docker-compose.sonar.yml        # Configuração SonarQube
-├── Dockerfile.scanner              # Scanner .NET com coverage
-├── sonar.sh                        # Helper Linux/macOS
-├── sonar.ps1                       # Helper Windows
-├── sonarqube.properties           # Configurações do projeto
-└── docs/
-	└── SONARQUBE.md               # Esta documentação
+â”œâ”€â”€ docker-compose.sonar.yml        # ConfiguraÃ§Ã£o SonarQube
+â”œâ”€â”€ Dockerfile.scanner              # Scanner .NET com coverage
+â”œâ”€â”€ sonar.sh                        # Helper Linux/macOS
+â”œâ”€â”€ sonar.ps1                       # Helper Windows
+â”œâ”€â”€ sonarqube.properties           # ConfiguraÃ§Ãµes do projeto
+â””â”€â”€ docs/
+	â””â”€â”€ SONARQUBE.md               # Esta documentaÃ§Ã£o
 ```
 
-## 🐳 Componentes Docker
+## Componentes Docker
 
 ### SonarQube Server
 - **Imagem**: `sonarqube:10-community`
@@ -90,9 +90,9 @@ order-management/
   - dotnet-reportgenerator-globaltool
 - **Profile**: analysis (executado sob demanda)
 
-## 🔧 Configuração
+## ConfiguraÃ§Ã£o
 
-### Variáveis de Ambiente
+### VariÃ¡veis de Ambiente
 
 No `docker-compose.sonar.yml`:
 
@@ -105,49 +105,49 @@ environment:
   - SONAR_PROJECT_VERSION=1.0.0
 ```
 
-### Exclusões e Cobertura
+### ExclusÃµes e Cobertura
 
-O scanner está configurado com:
+O scanner estÃ¡ configurado com:
 
 ```bash
-# Exclusões de análise
+# ExclusÃµes de anÃ¡lise
 /d:sonar.exclusions="**/Migrations/**,**/obj/**,**/bin/**"
 
-# Exclusões de cobertura
+# ExclusÃµes de cobertura
 /d:sonar.coverage.exclusions="**/Program.cs,**/Migrations/**,**/*Tests/**"
 
-# Relatório de cobertura
+# RelatÃ³rio de cobertura
 /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
 ```
 
-## 📝 Comandos Helper
+## Comandos Helper
 
 ### Scripts sonar.sh / sonar.ps1
 
-| Comando | Descrição |
+| Comando | DescriÃ§Ã£o |
 |---------|-----------|
 | `start` | Inicia SonarQube e PostgreSQL |
-| `stop` | Para os serviços |
-| `restart` | Reinicia os serviços |
+| `stop` | Para os serviÃ§os |
+| `restart` | Reinicia os serviÃ§os |
 | `logs` | Exibe logs em tempo real |
-| `analyze` | Executa análise de código |
+| `analyze` | Executa anÃ¡lise de cÃ³digo |
 | `status` | Verifica status do SonarQube |
-| `token` | Mostra instruções para criar token |
+| `token` | Mostra instruÃ§Ãµes para criar token |
 | `clean` | Remove volumes e dados |
 | `help` | Exibe ajuda |
 
-## 🔐 Gerando o Token
+## Gerando o Token
 
 ### Via Interface Web
 
 1. Acesse http://localhost:9000
 2. Login: `admin` / `admin`
-3. Você será forçado a alterar a senha
-4. Vá em: **My Account** → **Security** → **Generate Tokens**
+3. VocÃª serÃ¡ forÃ§ado a alterar a senha
+4. VÃ¡ em: **My Account** â†’ **Security** â†’ **Generate Tokens**
 5. Nome: `scanner` (ou qualquer nome)
 6. Type: **User Token**
 7. Clique em **Generate**
-8. Copie o token (você não verá novamente!)
+8. Copie o token (vocÃª nÃ£o verÃ¡ novamente!)
 
 ### Via API
 
@@ -166,9 +166,9 @@ curl -u admin:sua_senha \
   -X POST "http://localhost:9000/api/user_tokens/generate?name=scanner"
 ```
 
-## 📊 Executando Análise
+## Executando AnÃ¡lise
 
-### Análise Completa
+### AnÃ¡lise Completa
 
 ```bash
 # Windows
@@ -179,71 +179,71 @@ $env:SONAR_TOKEN="seu_token"
 SONAR_TOKEN=seu_token ./sonar.sh analyze
 ```
 
-O processo irá:
+O processo irÃ¡:
 1. Iniciar o scanner
-2. Restaurar dependências
+2. Restaurar dependÃªncias
 3. Build do projeto
 4. Executar testes com cobertura (OpenCover)
 5. Enviar resultados para o SonarQube
-6. Gerar relatório
+6. Gerar relatÃ³rio
 
 ### Apenas Build Local
 
-Se você quiser apenas build e testes sem enviar ao SonarQube:
+Se vocÃª quiser apenas build e testes sem enviar ao SonarQube:
 
 ```bash
 docker-compose -f docker-compose.sonar.yml build scanner
 ```
 
-## 📈 Visualizando Resultados
+## Visualizando Resultados
 
 1. Acesse: http://localhost:9000
-2. Faça login
+2. FaÃ§a login
 3. Selecione o projeto **Order Management API**
 4. Visualize:
-   - **Overview**: Métricas gerais
+   - **Overview**: MÃ©tricas gerais
    - **Issues**: Bugs, vulnerabilidades, code smells
-   - **Measures**: Métricas detalhadas
-   - **Code**: Código anotado
-   - **Activity**: Histórico de análises
+   - **Measures**: MÃ©tricas detalhadas
+   - **Code**: CÃ³digo anotado
+   - **Activity**: HistÃ³rico de anÃ¡lises
 
-## 🎯 Métricas Monitoradas
+## MÃ©tricas Monitoradas
 
-O SonarQube irá analisar:
+O SonarQube irÃ¡ analisar:
 
-### Qualidade de Código
-- ✅ **Bugs**: Erros que causam comportamento incorreto
-- ✅ **Vulnerabilities**: Falhas de segurança
-- ✅ **Code Smells**: Manutenibilidade e boas práticas
-- ✅ **Security Hotspots**: Pontos sensíveis de segurança
+### Qualidade de CÃ³digo
+- **Bugs**: Erros que causam comportamento incorreto
+- **Vulnerabilities**: Falhas de seguranÃ§a
+- **Code Smells**: Manutenibilidade e boas prÃ¡ticas
+- **Security Hotspots**: Pontos sensÃ­veis de seguranÃ§a
 
 ### Cobertura de Testes
-- ✅ **Line Coverage**: Linhas de código cobertas
-- ✅ **Branch Coverage**: Branches cobertos
-- ✅ **Condition Coverage**: Condições testadas
+- **Line Coverage**: Linhas de cÃ³digo cobertas
+- **Branch Coverage**: Branches cobertos
+- **Condition Coverage**: CondiÃ§Ãµes testadas
 
-### Duplicação
-- ✅ **Duplicated Lines**: Linhas duplicadas
-- ✅ **Duplicated Blocks**: Blocos duplicados
+### DuplicaÃ§Ã£o
+- **Duplicated Lines**: Linhas duplicadas
+- **Duplicated Blocks**: Blocos duplicados
 
 ### Complexidade
-- ✅ **Complexity**: Complexidade ciclomática
-- ✅ **Cognitive Complexity**: Complexidade cognitiva
+- **Complexity**: Complexidade ciclomÃ¡tica
+- **Cognitive Complexity**: Complexidade cognitiva
 
-## 🔍 Troubleshooting
+## Troubleshooting
 
-### SonarQube não inicia
+### SonarQube nÃ£o inicia
 
 ```bash
 # Ver logs
 .\sonar.ps1 logs    # Windows
 ./sonar.sh logs     # Linux
 
-# Verificar memória
+# Verificar memÃ³ria
 docker stats ordermanagement-sonarqube
 ```
 
-### Erro de memória (vm.max_map_count)
+### Erro de memÃ³ria (vm.max_map_count)
 
 **Linux:**
 ```bash
@@ -251,10 +251,10 @@ sudo sysctl -w vm.max_map_count=262144
 echo "vm.max_map_count=262144" | sudo tee -a /etc/sysctl.conf
 ```
 
-### Token inválido
+### Token invÃ¡lido
 
 ```bash
-# Verificar se o token está definido
+# Verificar se o token estÃ¡ definido
 echo $env:SONAR_TOKEN    # Windows
 echo $SONAR_TOKEN        # Linux
 
@@ -262,7 +262,7 @@ echo $SONAR_TOKEN        # Linux
 .\sonar.ps1 token
 ```
 
-### Análise falha
+### AnÃ¡lise falha
 
 ```bash
 # Ver logs do scanner
@@ -277,12 +277,12 @@ docker-compose -f docker-compose.sonar.yml build --no-cache scanner
 Edite `docker-compose.sonar.yml`:
 ```yaml
 ports:
-  - "9001:9000"  # Use porta 9001 ao invés de 9000
+  - "9001:9000"  # Use porta 9001 ao invÃ©s de 9000
 ```
 
-Atualize também `SONAR_HOST_URL` no scanner.
+Atualize tambÃ©m `SONAR_HOST_URL` no scanner.
 
-## 🚀 Integração com CI/CD
+## IntegraÃ§Ã£o com CI/CD
 
 ### GitHub Actions
 
@@ -371,7 +371,7 @@ Adicione ao `azure-pipelines.yml`:
 	pollingTimeoutSec: '300'
 ```
 
-## 📚 Configurações Avançadas
+## ðŸ“š ConfiguraÃ§Ãµes AvanÃ§adas
 
 ### Arquivo sonar-project.properties
 
@@ -400,45 +400,45 @@ sonar.language=cs
 ### Quality Gates Customizados
 
 1. Acesse **Quality Gates** no SonarQube
-2. Crie um novo gate ou edite o padrão
-3. Configure condições:
+2. Crie um novo gate ou edite o padrÃ£o
+3. Configure condiÃ§Ãµes:
    - Coverage > 80%
    - Duplications < 3%
    - Maintainability Rating = A
    - Reliability Rating = A
    - Security Rating = A
 
-## 🎓 Boas Práticas
+## ðŸŽ“ Boas PrÃ¡ticas
 
-1. **Execute análise regularmente**
+1. **Execute anÃ¡lise regularmente**
    - Em cada PR
-   - No mínimo diário no branch principal
+   - No mÃ­nimo diÃ¡rio no branch principal
 
-2. **Resolva issues críticas imediatamente**
-   - Bugs: Prioridade máxima
-   - Vulnerabilities: Correção urgente
+2. **Resolva issues crÃ­ticas imediatamente**
+   - Bugs: Prioridade mÃ¡xima
+   - Vulnerabilities: CorreÃ§Ã£o urgente
    - Code Smells: Refatorar gradualmente
 
 3. **Mantenha alta cobertura de testes**
    - Meta: >80% de cobertura
-   - Foque em código crítico
+   - Foque em cÃ³digo crÃ­tico
 
-4. **Monitore tendências**
-   - Use o gráfico de atividade
-   - Rastreie débito técnico
+4. **Monitore tendÃªncias**
+   - Use o grÃ¡fico de atividade
+   - Rastreie dÃ©bito tÃ©cnico
 
-5. **Configure notificações**
+5. **Configure notificaÃ§Ãµes**
    - Email para failed quality gates
-   - Webhooks para integração com Slack/Teams
+   - Webhooks para integraÃ§Ã£o com Slack/Teams
 
-## 🔗 Links Úteis
+## Links Ãšteis
 
 - [SonarQube Documentation](https://docs.sonarqube.org/)
 - [SonarScanner for .NET](https://docs.sonarqube.org/latest/analysis/scan/sonarscanner-for-msbuild/)
 - [Coverage with OpenCover](https://github.com/coverlet-coverage/coverlet)
 - [Quality Gates](https://docs.sonarqube.org/latest/user-guide/quality-gates/)
 
-## 📊 Comandos de Referência Rápida
+## Comandos de ReferÃªncia RÃ¡pida
 
 ```bash
 # Iniciar
@@ -451,7 +451,7 @@ Start-Sleep -Seconds 60
 # Criar projeto e token (interface web)
 start http://localhost:9000
 
-# Executar análise
+# Executar anÃ¡lise
 $env:SONAR_TOKEN="seu_token"
 .\sonar.ps1 analyze
 
@@ -465,5 +465,6 @@ start http://localhost:9000/dashboard?id=order-management
 ---
 
 **Criado por:** GitHub Copilot  
-**Versão SonarQube:** 10 Community  
+**VersÃ£o SonarQube:** 10 Community  
 **Compatibilidade:** .NET 10
+

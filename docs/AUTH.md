@@ -1,14 +1,14 @@
-# 🔐 Autenticação JWT - Order Management API
+﻿# ðŸ” AutenticaÃ§Ã£o JWT - Order Management API
 
 ## Endpoint de Login
 
 **POST** `/api/auth/login`
 
-Retorna um token JWT válido por 8 horas.
+Retorna um token JWT vÃ¡lido por 8 horas.
 
 ### Credenciais de Desenvolvimento
 
-As credenciais estão configuradas em `appsettings.Development.json`:
+As credenciais estÃ£o configuradas em `appsettings.Development.json`:
 
 ```json
 {
@@ -54,7 +54,7 @@ curl -X POST "https://localhost:7000/api/auth/login" \
 
 ## Como Usar o Token
 
-Após obter o token, inclua-o no header `Authorization` das requisições protegidas:
+ApÃ³s obter o token, inclua-o no header `Authorization` das requisiÃ§Ãµes protegidas:
 
 ```bash
 curl -X GET "https://localhost:7000/api/orders" \
@@ -69,21 +69,21 @@ curl -X GET "https://localhost:7000/api/orders" \
    - Username: `dev@martech.com`
    - Password: `Senha@123`
 4. Copie o token retornado
-5. Clique no botão **Authorize** (cadeado) no topo do Swagger
+5. Clique no botÃ£o **Authorize** (cadeado) no topo do Swagger
 6. Cole o token no formato: `Bearer {seu-token-aqui}`
-7. Agora você pode testar endpoints protegidos
+7. Agora vocÃª pode testar endpoints protegidos
 
 ## Claims no Token
 
-O token JWT contém as seguintes claims:
+O token JWT contÃ©m as seguintes claims:
 
 - **Email**: dev@martech.com
 - **Name**: dev@martech.com
 - **Role**: Admin
-- **Jti**: ID único do token
-- **Sub**: Subject (email do usuário)
+- **Jti**: ID Ãºnico do token
+- **Sub**: Subject (email do usuÃ¡rio)
 
-## Configuração JWT (appsettings.json)
+## ConfiguraÃ§Ã£o JWT (appsettings.json)
 
 ```json
 {
@@ -95,4 +95,5 @@ O token JWT contém as seguintes claims:
 }
 ```
 
-⚠️ **IMPORTANTE**: Em produção, use variáveis de ambiente para a `Jwt:Key`!
+âš ï¸ **IMPORTANTE**: Em produÃ§Ã£o, use variÃ¡veis de ambiente para a `Jwt:Key`!
+

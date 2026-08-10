@@ -6,11 +6,13 @@ services:
     container_name: ordermanagement-api
     ports:
       - "5000:8080"
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Data Source=/app/data/ordermanagement.db
-      - Jwt__Key=YourSuperSecretKeyForJWTTokenGenerationWithMinimum32Characters
+      - Jwt__Key=${Jwt__Key}
       - Jwt__Issuer=OrderManagementAPI
       - Jwt__Audience=OrderManagementClient
       - OpenTelemetry__ServiceName=OrderManagement.API

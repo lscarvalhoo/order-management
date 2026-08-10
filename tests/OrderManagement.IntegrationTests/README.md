@@ -53,7 +53,6 @@ protected override void ConfigureWebHost(IWebHostBuilder builder)
 			["DevelopmentAuth:FixedUser:Email"] = "dev@martech.com",
 			["DevelopmentAuth:FixedUser:Password"] = "Senha@123",
 			["DevelopmentAuth:FixedUser:Role"] = "Admin",
-			["Jwt:Key"] = "YourSuperSecretKeyForJWTTokenGenerationWithMinimum32Characters",
 			["Jwt:Issuer"] = "OrderManagementAPI",
 			["Jwt:Audience"] = "OrderManagementClient"
 		});
@@ -120,5 +119,6 @@ Valores em `appsettings.Development.json` usados nos testes:
 ## Observações
 
 - A autenticação, validação e comportamentos de negócio são validados pela suite.
+- No ambiente `Testing`, a aplicação gera uma chave JWT efêmera em memória quando `Jwt:Key` não é informada. Isso evita versionar segredos no repositório e mantém os testes independentes de credenciais reais.
 - Se algum teste falhar localmente, verifique se outro processo não está bloqueando a criação/abertura da conexão SQLite in-memory.
 - Para debugging, abra o console de saída do test runner ou execute o teste individual no Visual Studio para ter logs detalhados.

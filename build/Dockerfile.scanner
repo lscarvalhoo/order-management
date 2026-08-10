@@ -2,34 +2,41 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0
 
 # Install Java (required for SonarScanner)
 RUN apt-get update && \
-	apt-get install -y openjdk-17-jdk wget unzip && \
+	apt-get install -y --no-install-recommends openjdk-17-jdk unzip wget && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 
+RUN groupadd --system appgroup \
+	&& useradd --system --create-home --gid appgroup appuser \
+	&& mkdir -p /src /home/appuser/.dotnet/tools /home/appuser/.nuget/packages \
+	&& chown -R appuser:appgroup /src /home/appuser
+ENV HOME=/home/appuser
+ENV NUGET_PACKAGES=/home/appuser/.nuget/packages
+ENV PATH="${PATH}:/home/appuser/.dotnet/tools"
+WORKDIR /src
+USER appuser
+
 # Install SonarScanner for .NET
 RUN dotnet tool install --global dotnet-sonarscanner
-ENV PATH="${PATH}:/root/.dotnet/tools"
 
 # Install ReportGenerator for coverage
 RUN dotnet tool install --global dotnet-reportgenerator-globaltool
 
-# Set working directory
-WORKDIR /src
-
 # Copy solution and project files
-COPY ["OrderManagement.sln", "./"]
-COPY ["src/API/OrderManagement.API/OrderManagement.API.csproj", "src/API/OrderManagement.API/"]
-COPY ["src/Application/OrderManagement.Application/OrderManagement.Application.csproj", "src/Application/OrderManagement.Application/"]
-COPY ["src/Domain/OrderManagement.Domain/OrderManagement.Domain.csproj", "src/Domain/OrderManagement.Domain/"]
-COPY ["src/Infrastructure/OrderManagement.Infrastructure/OrderManagement.Infrastructure.csproj", "src/Infrastructure/OrderManagement.Infrastructure/"]
-COPY ["tests/OrderManagement.UnitTests/OrderManagement.UnitTests.csproj", "tests/OrderManagement.UnitTests/"]
-COPY ["tests/OrderManagement.IntegrationTests/OrderManagement.IntegrationTests.csproj", "tests/OrderManagement.IntegrationTests/"]
+COPY --chown=appuser:appgroup ["OrderManagement.sln", "./"]
+COPY --chown=appuser:appgroup ["src/API/OrderManagement.API/OrderManagement.API.csproj", "src/API/OrderManagement.API/"]
+COPY --chown=appuser:appgroup ["src/Application/OrderManagement.Application/OrderManagement.Application.csproj", "src/Application/OrderManagement.Application/"]
+COPY --chown=appuser:appgroup ["src/Domain/OrderManagement.Domain/OrderManagement.Domain.csproj", "src/Domain/OrderManagement.Domain/"]
+COPY --chown=appuser:appgroup ["src/Infrastructure/OrderManagement.Infrastructure/OrderManagement.Infrastructure.csproj", "src/Infrastructure/OrderManagement.Infrastructure/"]
+COPY --chown=appuser:appgroup ["tests/OrderManagement.UnitTests/OrderManagement.UnitTests.csproj", "tests/OrderManagement.UnitTests/"]
+COPY --chown=appuser:appgroup ["tests/OrderManagement.IntegrationTests/OrderManagement.IntegrationTests.csproj", "tests/OrderManagement.IntegrationTests/"]
 
 # Restore dependencies
 RUN dotnet restore "OrderManagement.sln"
 
-# Copy the rest of the code
-COPY . .
+# Copy application and test source only
+COPY --chown=appuser:appgroup ["src/", "src/"]
+COPY --chown=appuser:appgroup ["tests/", "tests/"]
 
 # Create a script to run the analysis
 RUN echo '#!/bin/bash\n\
@@ -63,7 +70,7 @@ dotnet test OrderManagement.sln \\\n\
 dotnet sonarscanner end /d:sonar.token="${SONAR_TOKEN}"\n\
 \n\
 echo "SonarQube analysis completed!"\n\
-' > /usr/local/bin/run-analysis.sh && chmod +x /usr/local/bin/run-analysis.sh
+' > /home/appuser/run-analysis.sh && chmod +x /home/appuser/run-analysis.sh
 
 # Set entrypoint
-ENTRYPOINT ["/usr/local/bin/run-analysis.sh"]
+ENTRYPOINT ["/home/appuser/run-analysis.sh"]

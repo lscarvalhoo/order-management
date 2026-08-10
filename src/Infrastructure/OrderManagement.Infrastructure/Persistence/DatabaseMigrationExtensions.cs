@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
-namespace OrderManagement.Infrastructure.Persistence;
-
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrderManagement.Infrastructure.Persistence;

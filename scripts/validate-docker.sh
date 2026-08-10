@@ -21,10 +21,10 @@ echo ""
 check_docker() {
 	echo -n "Checking Docker installation... "
 	if command -v docker &> /dev/null; then
-		echo -e "${GREEN}✓${NC}"
+		echo -e "${GREEN}OK${NC}"
 		docker --version
 	else
-		echo -e "${RED}✗${NC}"
+		echo -e "${RED}ERROR${NC}"
 		echo "Docker is not installed!"
 		exit 1
 	fi
@@ -34,10 +34,10 @@ check_docker() {
 check_docker_compose() {
 	echo -n "Checking Docker Compose installation... "
 	if command -v docker-compose &> /dev/null || docker compose version &> /dev/null; then
-		echo -e "${GREEN}✓${NC}"
+		echo -e "${GREEN}OK${NC}"
 		docker-compose --version 2>/dev/null || docker compose version
 	else
-		echo -e "${RED}✗${NC}"
+		echo -e "${RED}ERROR${NC}"
 		echo "Docker Compose is not installed!"
 		exit 1
 	fi
@@ -61,9 +61,9 @@ check_files() {
 	for file in "${files[@]}"; do
 		echo -n "  - $file... "
 		if [ -f "$file" ]; then
-			echo -e "${GREEN}✓${NC}"
+			echo -e "${GREEN}OK${NC}"
 		else
-			echo -e "${RED}✗${NC}"
+			echo -e "${RED}ERROR${NC}"
 			all_found=false
 		fi
 	done
@@ -78,7 +78,7 @@ check_files() {
 build_image() {
 	echo -e "${YELLOW}Building Docker image...${NC}"
 	docker-compose build --no-cache
-	echo -e "${GREEN}✓ Build successful${NC}"
+	echo -e "${GREEN}OK Build successful${NC}"
 	echo ""
 }
 
@@ -86,7 +86,7 @@ start_services() {
 	echo -e "${YELLOW}Starting services...${NC}"
 	mkdir -p data logs
 	docker-compose up -d
-	echo -e "${GREEN}✓ Services started${NC}"
+	echo -e "${GREEN}OK Services started${NC}"
 	echo ""
 }
 
@@ -97,7 +97,7 @@ wait_for_health() {
 
 	while [ $attempt -lt $max_attempts ]; do
 		if curl -s -f http://localhost:5000/health > /dev/null 2>&1; then
-			echo -e " ${GREEN}✓${NC}"
+			echo -e " ${GREEN}OK${NC}"
 			return 0
 		fi
 		echo -n "."
@@ -105,7 +105,7 @@ wait_for_health() {
 		attempt=$((attempt + 1))
 	done
 
-	echo -e " ${RED}✗${NC}"
+	echo -e " ${RED}ERROR${NC}"
 	echo "API failed to become healthy after $max_attempts attempts"
 	docker-compose logs api
 	return 1
@@ -117,18 +117,18 @@ test_endpoints() {
 	# Test health endpoint
 	echo -n "  - Health check... "
 	if curl -s -f http://localhost:5000/health > /dev/null; then
-		echo -e "${GREEN}✓${NC}"
+		echo -e "${GREEN}OK${NC}"
 	else
-		echo -e "${RED}✗${NC}"
+		echo -e "${RED}ERROR${NC}"
 		return 1
 	fi
 
 	# Test Swagger
 	echo -n "  - Swagger UI... "
 	if curl -s -f http://localhost:5000/swagger/index.html > /dev/null; then
-		echo -e "${GREEN}✓${NC}"
+		echo -e "${GREEN}OK${NC}"
 	else
-		echo -e "${RED}✗${NC}"
+		echo -e "${RED}ERROR${NC}"
 		return 1
 	fi
 
@@ -140,11 +140,11 @@ test_endpoints() {
 		-w "%{http_code}" -o /tmp/login_response.json)
 
 	if [ "$response" = "200" ]; then
-		echo -e "${GREEN}✓${NC}"
+		echo -e "${GREEN}OK${NC}"
 		token=$(cat /tmp/login_response.json | grep -o '"token":"[^"]*' | grep -o '[^"]*$')
 		echo "    Token received: ${token:0:50}..."
 	else
-		echo -e "${RED}✗${NC}"
+		echo -e "${RED}ERROR${NC}"
 		cat /tmp/login_response.json
 		return 1
 	fi
@@ -167,11 +167,11 @@ test_endpoints() {
 		-w "%{http_code}" -o /tmp/create_order_response.json)
 
 	if [ "$response" = "201" ]; then
-		echo -e "${GREEN}✓${NC}"
+		echo -e "${GREEN}OK${NC}"
 		order_id=$(cat /tmp/create_order_response.json | grep -o '"id":"[^"]*' | grep -o '[^"]*$')
 		echo "    Order created: $order_id"
 	else
-		echo -e "${RED}✗${NC}"
+		echo -e "${RED}ERROR${NC}"
 		cat /tmp/create_order_response.json
 		return 1
 	fi
@@ -184,18 +184,18 @@ check_volumes() {
 
 	echo -n "  - Database file... "
 	if [ -f "data/ordermanagement.db" ]; then
-		echo -e "${GREEN}✓${NC}"
+		echo -e "${GREEN}OK${NC}"
 		ls -lh data/ordermanagement.db
 	else
-		echo -e "${RED}✗${NC}"
+		echo -e "${RED}ERROR${NC}"
 	fi
 
 	echo -n "  - Log files... "
 	if [ -d "logs" ] && [ "$(ls -A logs)" ]; then
-		echo -e "${GREEN}✓${NC}"
+		echo -e "${GREEN}OK${NC}"
 		ls -lh logs/
 	else
-		echo -e "${YELLOW}⚠${NC} (no logs yet)"
+		echo -e "${YELLOW}WARNING${NC} (no logs yet)"
 	fi
 
 	echo ""
@@ -205,10 +205,10 @@ check_logs() {
 	echo -e "${YELLOW}Checking logs for errors...${NC}"
 
 	if docker-compose logs api | grep -i "error" > /tmp/errors.txt; then
-		echo -e "${YELLOW}⚠ Found error messages in logs:${NC}"
+		echo -e "${YELLOW}WARNING: Found error messages in logs:${NC}"
 		cat /tmp/errors.txt
 	else
-		echo -e "${GREEN}✓ No errors found in logs${NC}"
+		echo -e "${GREEN}OK No errors found in logs${NC}"
 	fi
 
 	echo ""
@@ -219,7 +219,7 @@ show_summary() {
 	echo -e "${BLUE}║              Validation Summary                        ║${NC}"
 	echo -e "${BLUE}╚════════════════════════════════════════════════════════╝${NC}"
 	echo ""
-	echo -e "${GREEN}✓ All checks passed successfully!${NC}"
+	echo -e "${GREEN}OK All checks passed successfully!${NC}"
 	echo ""
 	echo "Service URLs:"
 	echo "  - API:     http://localhost:5000"
@@ -237,7 +237,7 @@ show_summary() {
 cleanup() {
 	echo -e "${YELLOW}Cleaning up...${NC}"
 	docker-compose down
-	echo -e "${GREEN}✓ Cleanup complete${NC}"
+	echo -e "${GREEN}OK Cleanup complete${NC}"
 	echo ""
 }
 

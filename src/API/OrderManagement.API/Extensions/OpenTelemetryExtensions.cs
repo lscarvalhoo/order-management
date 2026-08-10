@@ -1,6 +1,5 @@
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-
 using System.Diagnostics.CodeAnalysis;
 
 namespace OrderManagement.API.Extensions;
@@ -29,7 +28,7 @@ public static class OpenTelemetryExtensions
                 .AddAspNetCoreInstrumentation(options =>
                 {
                     options.RecordException = true;
-                    options.Filter = (httpContext) =>
+                    options.Filter = httpContext =>
                     {
                         var path = httpContext.Request.Path.Value ?? string.Empty;
                         return !path.StartsWith("/swagger") &&
@@ -69,6 +68,4 @@ public static class OpenTelemetryExtensions
 
         return services;
     }
-
-[ExcludeFromCodeCoverage]
 }

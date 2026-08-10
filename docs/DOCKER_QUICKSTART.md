@@ -1,13 +1,13 @@
-# 🐳 Docker Quick Start
+﻿# ðŸ³ Docker Quick Start
 
-Este guia oferece um resumo rápido para subir a aplicação usando Docker.
+Este guia oferece um resumo rÃ¡pido para subir a aplicaÃ§Ã£o usando Docker.
 
-## Pré-requisitos
+## PrÃ©-requisitos
 
 - Docker 20.10+
 - Docker Compose v2.0+
 
-## 🚀 Comandos Rápidos
+## ðŸš€ Comandos RÃ¡pidos
 
 ### Windows (PowerShell)
 
@@ -19,7 +19,7 @@ Este guia oferece um resumo rápido para subir a aplicação usando Docker.
 # Ver logs
 .\docker.ps1 logs-api
 
-# Verificar saúde
+# Verificar saÃºde
 .\docker.ps1 health
 
 # Parar
@@ -29,7 +29,7 @@ Este guia oferece um resumo rápido para subir a aplicação usando Docker.
 ### Linux/macOS
 
 ```bash
-# Dar permissão de execução (primeira vez)
+# Dar permissÃ£o de execuÃ§Ã£o (primeira vez)
 chmod +x docker.sh
 
 # Build e Start
@@ -39,7 +39,7 @@ chmod +x docker.sh
 # Ver logs
 ./docker.sh logs-api
 
-# Verificar saúde
+# Verificar saÃºde
 ./docker.sh health
 
 # Parar
@@ -65,39 +65,39 @@ curl http://localhost:5000/health
 docker-compose down
 ```
 
-## 🌐 URLs
+## ðŸŒ URLs
 
-Após iniciar:
+ApÃ³s iniciar:
 
 - **API**: http://localhost:5000
 - **Swagger**: http://localhost:5000/swagger
 - **Health**: http://localhost:5000/health
 
-## 📂 Volumes
+## ðŸ“‚ Volumes
 
 - `./data` - Banco de dados SQLite
-- `./logs` - Logs da aplicação
+- `./logs` - Logs da aplicaÃ§Ã£o
 
-## 🔧 Customização
+## ðŸ”§ CustomizaÃ§Ã£o
 
-Copie `.env.example` para `.env` e ajuste as variáveis:
+Copie `.env.example` para `.env` e ajuste as variÃ¡veis:
 
 ```bash
 cp .env.example .env
 ```
 
-## 📖 Documentação Completa
+## ðŸ“– DocumentaÃ§Ã£o Completa
 
-Para documentação completa, veja [DOCKER.md](DOCKER.md)
+Para documentaÃ§Ã£o completa, veja [DOCKER.md](DOCKER.md)
 
-## 🔍 Troubleshooting
+## ðŸ” Troubleshooting
 
 ### Porta 5000 em uso
 
 Edite `docker-compose.yml` e mude:
 ```yaml
 ports:
-  - "5001:8080"  # Usar porta 5001 ao invés de 5000
+  - "5001:8080"  # Usar porta 5001 ao invÃ©s de 5000
 ```
 
 ### Ver logs de erro
@@ -113,7 +113,7 @@ docker-compose logs api
 ./docker.sh rebuild     # Linux
 ```
 
-## 🎯 Testando a API
+## ðŸŽ¯ Testando a API
 
 ```bash
 # Login
@@ -127,3 +127,5 @@ curl -X POST http://localhost:5000/api/orders \
   -H "Authorization: Bearer YOUR_TOKEN_HERE" \
   -d '{"customerId":"550e8400-e29b-41d4-a716-446655440000","items":[{"productName":"Product A","quantity":2,"unitPrice":49.90}]}'
 ```
+
+

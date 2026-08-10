@@ -12,6 +12,16 @@
 *.userprefs
 *.cache
 
+# Environment and secrets
+.env
+.env.*
+**/.env
+**/.env.*
+*.pfx
+*.snk
+*.key
+*.pem
+
 # Database files
 *.db
 *.db-shm

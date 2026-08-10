@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using OrderManagement.API.Configuration;
 using OrderManagement.API.Services;
 using OrderManagement.Application.Commands.Login;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace OrderManagement.API.Extensions;
@@ -11,15 +13,15 @@ public static class AuthenticationServiceExtensions
 {
     public static IServiceCollection AddJwtAuthentication(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IHostEnvironment environment)
     {
-        var jwtKey = configuration["Jwt:Key"]
-            ?? throw new InvalidOperationException("JWT Key is not configured");
-        var jwtIssuer = configuration["Jwt:Issuer"]
-            ?? throw new InvalidOperationException("JWT Issuer is not configured");
-        var jwtAudience = configuration["Jwt:Audience"]
-            ?? throw new InvalidOperationException("JWT Audience is not configured");
+        var jwtOptions = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ?? new JwtOptions();
+        jwtOptions.Key = ResolveSigningKey(jwtOptions.Key, environment);
+        jwtOptions.Issuer = RequireValue(jwtOptions.Issuer, "JWT issuer");
+        jwtOptions.Audience = RequireValue(jwtOptions.Audience, "JWT audience");
 
+        services.AddSingleton(Options.Create(jwtOptions));
         services.Configure<DevelopmentAuthOptions>(
             configuration.GetSection(DevelopmentAuthOptions.SectionName));
 
@@ -39,14 +41,34 @@ public static class AuthenticationServiceExtensions
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtIssuer,
-                ValidAudience = jwtAudience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+                ValidIssuer = jwtOptions.Issuer,
+                ValidAudience = jwtOptions.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key))
             };
         });
 
         services.AddAuthorization();
 
         return services;
+    }
+
+    private static string RequireValue(string? value, string settingName) =>
+        string.IsNullOrWhiteSpace(value)
+            ? throw new InvalidOperationException($"{settingName} is not configured")
+            : value;
+
+    private static string ResolveSigningKey(string? configuredKey, IHostEnvironment environment)
+    {
+        if (!string.IsNullOrWhiteSpace(configuredKey))
+        {
+            return configuredKey;
+        }
+
+        if (environment.IsDevelopment() || environment.IsEnvironment("Testing"))
+        {
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        }
+
+        throw new InvalidOperationException("JWT signing key is not configured");
     }
 }

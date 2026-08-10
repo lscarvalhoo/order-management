@@ -1,73 +1,73 @@
-# ✅ Docker Implementation Checklist
+﻿# âœ… Docker Implementation Checklist
 
 ## Arquivos Criados
 
-- ✅ `Dockerfile` - Multi-stage build otimizado
-- ✅ `.dockerignore` - Arquivos excluídos do build
-- ✅ `docker-compose.yml` - Produção
-- ✅ `docker-compose.dev.yml` - Desenvolvimento com hot-reload
-- ✅ `.env.example` - Template de variáveis de ambiente
-- ✅ `docker.sh` - Helper script para Linux/macOS
-- ✅ `docker.ps1` - Helper script para Windows/PowerShell
-- ✅ `docs/DOCKER.md` - Documentação completa
-- ✅ `DOCKER_QUICKSTART.md` - Guia rápido
+- âœ… `Dockerfile` - Multi-stage build otimizado
+- âœ… `.dockerignore` - Arquivos excluÃ­dos do build
+- âœ… `docker-compose.yml` - ProduÃ§Ã£o
+- âœ… `docker-compose.dev.yml` - Desenvolvimento com hot-reload
+- âœ… `.env.example` - Template de variÃ¡veis de ambiente
+- âœ… `docker.sh` - Helper script para Linux/macOS
+- âœ… `docker.ps1` - Helper script para Windows/PowerShell
+- âœ… `docs/DOCKER.md` - DocumentaÃ§Ã£o completa
+- âœ… `DOCKER_QUICKSTART.md` - Guia rÃ¡pido
 
 ## Recursos Implementados
 
 ### Dockerfile
-- ✅ Multi-stage build (build/publish/runtime)
-- ✅ Baseado em .NET 10
-- ✅ Otimizado para tamanho da imagem
-- ✅ Health check integrado
-- ✅ Variáveis de ambiente configuráveis
-- ✅ Portas 8080 (HTTP) expostas
-- ✅ Diretórios de dados e logs criados
+- âœ… Multi-stage build (build/publish/runtime)
+- âœ… Baseado em .NET 10
+- âœ… Otimizado para tamanho da imagem
+- âœ… Health check integrado
+- âœ… VariÃ¡veis de ambiente configurÃ¡veis
+- âœ… Portas 8080 (HTTP) expostas
+- âœ… DiretÃ³rios de dados e logs criados
 
 ### Docker Compose
-- ✅ Service API configurado
-- ✅ Health check automático (30s interval)
-- ✅ Restart policy (unless-stopped)
-- ✅ Network isolada
-- ✅ Volumes persistentes (data, logs)
-- ✅ Variáveis de ambiente definidas
-- ✅ Porta mapeada 5000:8080
+- âœ… Service API configurado
+- âœ… Health check automÃ¡tico (30s interval)
+- âœ… Restart policy (unless-stopped)
+- âœ… Network isolada
+- âœ… Volumes persistentes (data, logs)
+- âœ… VariÃ¡veis de ambiente definidas
+- âœ… Porta mapeada 5000:8080
 
 ### Scripts Helper
-- ✅ Comando `build` - Construir imagem
-- ✅ Comando `up` - Iniciar serviços
-- ✅ Comando `down` - Parar serviços
-- ✅ Comando `restart` - Reiniciar
-- ✅ Comando `logs` - Ver todos os logs
-- ✅ Comando `logs-api` - Ver logs da API
-- ✅ Comando `health` - Verificar saúde
-- ✅ Comando `clean` - Limpar volumes
-- ✅ Comando `rebuild` - Rebuild completo
-- ✅ Comando `shell` - Abrir shell no container
-- ✅ Validação de pré-requisitos (Docker/Compose)
-- ✅ Criação automática de diretórios (data/logs)
-- ✅ Output colorido e mensagens claras
+- âœ… Comando `build` - Construir imagem
+- âœ… Comando `up` - Iniciar serviÃ§os
+- âœ… Comando `down` - Parar serviÃ§os
+- âœ… Comando `restart` - Reiniciar
+- âœ… Comando `logs` - Ver todos os logs
+- âœ… Comando `logs-api` - Ver logs da API
+- âœ… Comando `health` - Verificar saÃºde
+- âœ… Comando `clean` - Limpar volumes
+- âœ… Comando `rebuild` - Rebuild completo
+- âœ… Comando `shell` - Abrir shell no container
+- âœ… ValidaÃ§Ã£o de prÃ©-requisitos (Docker/Compose)
+- âœ… CriaÃ§Ã£o automÃ¡tica de diretÃ³rios (data/logs)
+- âœ… Output colorido e mensagens claras
 
-### Integração com Aplicação
-- ✅ Health check endpoint (`/health`)
-- ✅ `appsettings.Production.json` criado
-- ✅ Configuração de logs para `/app/logs`
-- ✅ Banco SQLite em `/app/data`
-- ✅ OpenTelemetry configurado
-- ✅ Serilog com output otimizado
+### IntegraÃ§Ã£o com AplicaÃ§Ã£o
+- âœ… Health check endpoint (`/health`)
+- âœ… `appsettings.Production.json` criado
+- âœ… ConfiguraÃ§Ã£o de logs para `/app/logs`
+- âœ… Banco SQLite em `/app/data`
+- âœ… OpenTelemetry configurado
+- âœ… Serilog com output otimizado
 
-### Documentação
-- ✅ Guia completo em `docs/DOCKER.md`
-- ✅ Quick start em `DOCKER_QUICKSTART.md`
-- ✅ Seção Docker no `README.md`
-- ✅ Exemplos de uso (Windows e Linux)
-- ✅ Troubleshooting guide
-- ✅ Security best practices
-- ✅ Production deployment considerations
+### DocumentaÃ§Ã£o
+- âœ… Guia completo em `docs/DOCKER.md`
+- âœ… Quick start em `DOCKER_QUICKSTART.md`
+- âœ… SeÃ§Ã£o Docker no `README.md`
+- âœ… Exemplos de uso (Windows e Linux)
+- âœ… Troubleshooting guide
+- âœ… Security best practices
+- âœ… Production deployment considerations
 
 ### `.gitignore`
-- ✅ Diretório `data/` ignorado
-- ✅ Diretório `logs/` ignorado
-- ✅ Arquivo `.env` ignorado
+- âœ… DiretÃ³rio `data/` ignorado
+- âœ… DiretÃ³rio `logs/` ignorado
+- âœ… Arquivo `.env` ignorado
 
 ## Como Testar
 
@@ -89,7 +89,7 @@ chmod +x docker.sh
 docker-compose build
 ```
 
-### 2. Iniciar os Serviços
+### 2. Iniciar os ServiÃ§os
 
 **Windows:**
 ```powershell
@@ -152,7 +152,7 @@ Abra o navegador em: http://localhost:5000/swagger
 docker-compose logs -f api
 ```
 
-### 6. Parar os Serviços
+### 6. Parar os ServiÃ§os
 
 **Windows:**
 ```powershell
@@ -169,34 +169,34 @@ docker-compose logs -f api
 docker-compose down
 ```
 
-## Validação de Funcionalidades
+## ValidaÃ§Ã£o de Funcionalidades
 
-Execute este checklist para validar que tudo está funcionando:
+Execute este checklist para validar que tudo estÃ¡ funcionando:
 
-- [ ] Build da imagem concluído sem erros
+- [ ] Build da imagem concluÃ­do sem erros
 - [ ] Container inicia sem erros
 - [ ] Health check retorna HTTP 200
-- [ ] Swagger acessível em http://localhost:5000/swagger
+- [ ] Swagger acessÃ­vel em http://localhost:5000/swagger
 - [ ] Endpoint de login responde corretamente
-- [ ] Banco de dados SQLite é criado em `./data/`
+- [ ] Banco de dados SQLite Ã© criado em `./data/`
 - [ ] Logs aparecem em `./logs/`
-- [ ] Logs também aparecem no console do container
+- [ ] Logs tambÃ©m aparecem no console do container
 - [ ] OpenTelemetry traces aparecem no console
-- [ ] Container reinicia automaticamente após crash
-- [ ] Volumes persistem dados após restart
+- [ ] Container reinicia automaticamente apÃ³s crash
+- [ ] Volumes persistem dados apÃ³s restart
 - [ ] Scripts helper funcionam em ambas plataformas
 
-## Próximos Passos Opcionais
+## PrÃ³ximos Passos Opcionais
 
-### Produção
+### ProduÃ§Ã£o
 - [ ] Configurar um reverse proxy (Nginx/Traefik)
-- [ ] Usar HTTPS com certificados válidos
+- [ ] Usar HTTPS com certificados vÃ¡lidos
 - [ ] Migrar para banco de dados externo (PostgreSQL/SQL Server)
 - [ ] Configurar secrets manager (Docker Secrets/Azure Key Vault)
 - [ ] Implementar logging externo (ELK/Seq/App Insights)
-- [ ] Setup CI/CD para build automático de imagens
+- [ ] Setup CI/CD para build automÃ¡tico de imagens
 - [ ] Deploy em orquestrador (Kubernetes/Docker Swarm)
-- [ ] Configurar backups automáticos dos volumes
+- [ ] Configurar backups automÃ¡ticos dos volumes
 
 ### Desenvolvimento
 - [ ] Testar `docker-compose.dev.yml` com hot-reload
@@ -205,14 +205,14 @@ Execute este checklist para validar que tudo está funcionando:
 
 ## Troubleshooting Common Issues
 
-### Porta 5000 já em uso
+### Porta 5000 jÃ¡ em uso
 ```yaml
 # docker-compose.yml
 ports:
   - "5001:8080"  # Use porta diferente
 ```
 
-### Permissões no Linux
+### PermissÃµes no Linux
 ```bash
 sudo usermod -aG docker $USER
 newgrp docker
@@ -238,6 +238,7 @@ docker system prune -a
 
 ## Status Final
 
-✅ **Implementação Docker Completa e Pronta para Uso!**
+âœ… **ImplementaÃ§Ã£o Docker Completa e Pronta para Uso!**
 
-Todos os arquivos foram criados, documentados e testados. A aplicação pode ser iniciada com um único comando e está pronta para deployment em qualquer ambiente com Docker.
+Todos os arquivos foram criados, documentados e testados. A aplicaÃ§Ã£o pode ser iniciada com um Ãºnico comando e estÃ¡ pronta para deployment em qualquer ambiente com Docker.
+

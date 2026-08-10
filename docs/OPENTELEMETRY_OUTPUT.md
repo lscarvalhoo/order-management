@@ -1,8 +1,8 @@
-# OpenTelemetry Console Output Example
+﻿# OpenTelemetry Console Output Example
 
 ## Exemplo de Output ao Criar um Pedido
 
-Quando você faz uma requisição `POST /api/orders`, verá uma saída similar a esta no console:
+Quando vocÃª faz uma requisiÃ§Ã£o `POST /api/orders`, verÃ¡ uma saÃ­da similar a esta no console:
 
 ```
 Activity.TraceId:            a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
@@ -68,7 +68,7 @@ Resource associated with Activity:
 
 ## Exemplo de Output ao Cancelar um Pedido
 
-Para uma requisição `PATCH /api/orders/{id}/cancel`:
+Para uma requisiÃ§Ã£o `PATCH /api/orders/{id}/cancel`:
 
 ```
 Activity.TraceId:            b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7
@@ -109,32 +109,33 @@ Resource associated with Activity:
 
 ## Entendendo os Campos
 
-- **TraceId**: Identificador único para toda a requisição (mesmo para todos os spans)
-- **SpanId**: Identificador único deste span específico
+- **TraceId**: Identificador Ãºnico para toda a requisiÃ§Ã£o (mesmo para todos os spans)
+- **SpanId**: Identificador Ãºnico deste span especÃ­fico
 - **ParentSpanId**: ID do span pai (mostra a hierarquia)
-- **ActivitySourceName**: Qual instrumentação gerou este span
-- **DisplayName**: Nome da operação
-- **Kind**: Server (requisição HTTP), Client (chamada externa), Internal (operação interna)
-- **Duration**: Tempo de execução
-- **Tags**: Metadados customizados sobre a operação
+- **ActivitySourceName**: Qual instrumentaÃ§Ã£o gerou este span
+- **DisplayName**: Nome da operaÃ§Ã£o
+- **Kind**: Server (requisiÃ§Ã£o HTTP), Client (chamada externa), Internal (operaÃ§Ã£o interna)
+- **Duration**: Tempo de execuÃ§Ã£o
+- **Tags**: Metadados customizados sobre a operaÃ§Ã£o
 
 ## Hierarquia de Spans
 
 ```
-┌─────────────────────────────────────────────┐
-│  POST /api/orders (Server)                  │  ← HTTP Request
-│  Duration: 00:00:00.2456789                 │
-│                                             │
-│  ┌───────────────────────────────────────┐ │
-│  │ CreateOrder (Internal)                │ │  ← Handler
-│  │ Duration: 00:00:00.1234567            │ │
-│  │                                       │ │
-│  │  ┌─────────────────────────────────┐ │ │
-│  │  │ INSERT Orders (Client)          │ │ │  ← Database
-│  │  │ Duration: 00:00:00.0891234      │ │ │
-│  │  └─────────────────────────────────┘ │ │
-│  └───────────────────────────────────────┘ │
-└─────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  POST /api/orders (Server)                  â”‚  â† HTTP Request
+â”‚  Duration: 00:00:00.2456789                 â”‚
+â”‚                                             â”‚
+â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”‚
+â”‚  â”‚ CreateOrder (Internal)                â”‚ â”‚  â† Handler
+â”‚  â”‚ Duration: 00:00:00.1234567            â”‚ â”‚
+â”‚  â”‚                                       â”‚ â”‚
+â”‚  â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”‚ â”‚
+â”‚  â”‚  â”‚ INSERT Orders (Client)          â”‚ â”‚ â”‚  â† Database
+â”‚  â”‚  â”‚ Duration: 00:00:00.0891234      â”‚ â”‚ â”‚
+â”‚  â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â”‚ â”‚
+â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
-Cada nível mostra onde o tempo foi gasto, facilitando a identificação de gargalos!
+Cada nÃ­vel mostra onde o tempo foi gasto, facilitando a identificaÃ§Ã£o de gargalos!
+

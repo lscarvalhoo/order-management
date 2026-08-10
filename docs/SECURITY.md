@@ -1,29 +1,29 @@
-# 🔒 Arquitetura de Segurança - Autenticação
+﻿# Arquitetura de SeguranÃ§a - AutenticaÃ§Ã£o
 
-## 📊 Estrutura de Credenciais
+## Estrutura de Credenciais
 
-As credenciais de desenvolvimento foram movidas do código hardcoded para uma estrutura mais segura e configurável.
+As credenciais de desenvolvimento foram movidas do cÃ³digo hardcoded para uma estrutura mais segura e configurÃ¡vel.
 
-### Antes ❌
+### Antes
 ```csharp
 // AuthController.cs - Hardcoded
 private const string FixedEmail = "dev@martech.com";
 private const string FixedPassword = "Senha@123";
 ```
 
-### Agora ✅
+### Agora
 ```
-📁 Hierarquia de Segurança:
-├── appsettings.Development.json (Configuração)
-├── DevelopmentAuthOptions (Classe fortemente tipada)
-├── IAuthenticationService (Abstração)
-├── DevelopmentAuthenticationService (Implementação)
-└── AuthController (Apenas usa o serviço)
+Hierarquia de SeguranÃ§a:
+â”œâ”€â”€ appsettings.Development.json (ConfiguraÃ§Ã£o)
+â”œâ”€â”€ DevelopmentAuthOptions (Classe fortemente tipada)
+â”œâ”€â”€ IAuthenticationService (AbstraÃ§Ã£o)
+â”œâ”€â”€ DevelopmentAuthenticationService (ImplementaÃ§Ã£o)
+â””â”€â”€ AuthController (Apenas usa o serviÃ§o)
 ```
 
-## 🏗️ Componentes
+## Componentes
 
-### 1. **Configuração** (`appsettings.Development.json`)
+### 1. **ConfiguraÃ§Ã£o** (`appsettings.Development.json`)
 ```json
 {
   "DevelopmentAuth": {
@@ -36,13 +36,13 @@ private const string FixedPassword = "Senha@123";
 }
 ```
 
-**Benefícios:**
-- Não está no código-fonte
-- Fácil de alterar sem recompilar
+**BenefÃ­cios:**
+- NÃ£o estÃ¡ no cÃ³digo-fonte
+- FÃ¡cil de alterar sem recompilar
 - Separado por ambiente (Development, Production)
-- Pode ser excluído do Git
+- Pode ser excluÃ­do do Git
 
-### 2. **Classe de Configuração** (`DevelopmentAuthOptions.cs`)
+### 2. **Classe de ConfiguraÃ§Ã£o** (`DevelopmentAuthOptions.cs`)
 ```csharp
 public class DevelopmentAuthOptions
 {
@@ -51,12 +51,12 @@ public class DevelopmentAuthOptions
 }
 ```
 
-**Benefícios:**
+**BenefÃ­cios:**
 - Fortemente tipado (type-safe)
 - IntelliSense no Visual Studio
-- Validação em tempo de compilação
+- ValidaÃ§Ã£o em tempo de compilaÃ§Ã£o
 
-### 3. **Serviço de Autenticação** (`AuthenticationService.cs`)
+### 3. **ServiÃ§o de AutenticaÃ§Ã£o** (`AuthenticationService.cs`)
 ```csharp
 public interface IAuthenticationService
 {
@@ -65,11 +65,11 @@ public interface IAuthenticationService
 }
 ```
 
-**Benefícios:**
-- Separa lógica de autenticação do controller
-- Fácil de testar (mockable)
-- Responsabilidade única
-- Pode ser substituído por outras implementações
+**BenefÃ­cios:**
+- Separa lÃ³gica de autenticaÃ§Ã£o do controller
+- FÃ¡cil de testar (mockable)
+- Responsabilidade Ãºnica
+- Pode ser substituÃ­do por outras implementaÃ§Ãµes
 
 ### 4. **Controller** (`AuthController.cs`)
 ```csharp
@@ -77,27 +77,27 @@ public AuthController(
 	IAuthenticationService authenticationService,
 	IJwtTokenService jwtTokenService)
 {
-	// Apenas injeta dependências
+	// Apenas injeta dependÃªncias
 }
 ```
 
-**Benefícios:**
-- Código limpo, sem lógica de validação
-- Testável
-- Não conhece detalhes de implementação
+**BenefÃ­cios:**
+- CÃ³digo limpo, sem lÃ³gica de validaÃ§Ã£o
+- TestÃ¡vel
+- NÃ£o conhece detalhes de implementaÃ§Ã£o
 
-## 🔐 Níveis de Segurança
+## NÃ­veis de SeguranÃ§a
 
 ### Desenvolvimento (Atual)
-✅ `appsettings.Development.json`
-- Credenciais em arquivo de configuração
-- Não vai para produção
-- Fácil de trocar
+`appsettings.Development.json`
+- Credenciais em arquivo de configuraÃ§Ã£o
+- NÃ£o vai para produÃ§Ã£o
+- FÃ¡cil de trocar
 
-### Produção (Recomendado)
-🚀 **Opções:**
+### ProduÃ§Ã£o (Recomendado)
+**OpÃ§Ãµes:**
 
-1. **Variáveis de Ambiente**
+1. **VariÃ¡veis de Ambiente**
 ```bash
 export DevelopmentAuth__FixedUser__Email=admin@prod.com
 export DevelopmentAuth__FixedUser__Password=StrongP@ssw0rd
@@ -116,16 +116,16 @@ dotnet user-secrets set "DevelopmentAuth:FixedUser:Email" "dev@local.com"
 dotnet user-secrets set "DevelopmentAuth:FixedUser:Password" "LocalP@ss"
 ```
 
-4. **Banco de Dados** (Produção Real)
+4. **Banco de Dados** (ProduÃ§Ã£o Real)
 ```csharp
 // Implementar UserService que busca no banco
 public class DatabaseAuthenticationService : IAuthenticationService
 {
-	// Validação contra banco de dados
+	// ValidaÃ§Ã£o contra banco de dados
 }
 ```
 
-## 🧪 Como Testar
+## Como Testar
 
 ### Alterar Credenciais
 
@@ -142,11 +142,11 @@ Edite `appsettings.Development.json`:
 }
 ```
 
-Reinicie a aplicação. Novas credenciais já estarão ativas!
+Reinicie a aplicaÃ§Ã£o. Novas credenciais jÃ¡ estarÃ£o ativas!
 
-### Múltiplos Usuários
+### MÃºltiplos UsuÃ¡rios
 
-Para adicionar suporte a múltiplos usuários, altere a configuração:
+Para adicionar suporte a mÃºltiplos usuÃ¡rios, altere a configuraÃ§Ã£o:
 
 ```json
 {
@@ -167,7 +167,7 @@ Para adicionar suporte a múltiplos usuários, altere a configuração:
 }
 ```
 
-E atualize o serviço:
+E atualize o serviÃ§o:
 ```csharp
 public class DevelopmentAuthenticationService : IAuthenticationService
 {
@@ -181,40 +181,41 @@ public class DevelopmentAuthenticationService : IAuthenticationService
 }
 ```
 
-## 📋 Checklist de Segurança
+## Checklist de SeguranÃ§a
 
-- ✅ Credenciais fora do código-fonte
-- ✅ Configuração por ambiente
-- ✅ Serviço injetável e testável
-- ✅ Logging de tentativas de login
-- ✅ Validação fortemente tipada
-- ⚠️ **TODO**: Criptografia de senha (BCrypt, Argon2)
-- ⚠️ **TODO**: Rate limiting para evitar brute force
-- ⚠️ **TODO**: Auditoria de logins no banco de dados
+- Credenciais fora do cÃ³digo-fonte
+- ConfiguraÃ§Ã£o por ambiente
+- ServiÃ§o injetÃ¡vel e testÃ¡vel
+- Logging de tentativas de login
+- ValidaÃ§Ã£o fortemente tipada
+- **TODO**: Criptografia de senha (BCrypt, Argon2)
+- **TODO**: Rate limiting para evitar brute force
+- **TODO**: Auditoria de logins no banco de dados
 
-## 🚀 Evolução Futura
+## EvoluÃ§Ã£o Futura
 
-### Fase 1 (Atual) ✅
-- Credenciais em configuração
-- Serviço de autenticação dedicado
+### Fase 1 (Atual)
+- Credenciais em configuraÃ§Ã£o
+- ServiÃ§o de autenticaÃ§Ã£o dedicado
 - JWT Token service
 
-### Fase 2 (Próximos passos)
+### Fase 2 (PrÃ³ximos passos)
 - [ ] Hash de senhas com BCrypt
-- [ ] Múltiplos usuários em configuração
+- [ ] MÃºltiplos usuÃ¡rios em configuraÃ§Ã£o
 - [ ] Rate limiting (10 tentativas/minuto)
 
-### Fase 3 (Produção)
-- [ ] Integração com banco de dados
+### Fase 3 (ProduÃ§Ã£o)
+- [ ] IntegraÃ§Ã£o com banco de dados
 - [ ] ASP.NET Core Identity
 - [ ] OAuth 2.0 / OpenID Connect
 - [ ] Refresh Tokens
 - [ ] Two-Factor Authentication (2FA)
 
-## 🔗 Arquivos Relacionados
+## Arquivos Relacionados
 
 - `src/API/OrderManagement.API/appsettings.Development.json`
 - `src/API/OrderManagement.API/Configuration/DevelopmentAuthOptions.cs`
 - `src/API/OrderManagement.API/Services/AuthenticationService.cs`
 - `src/API/OrderManagement.API/Controllers/AuthController.cs`
 - `src/API/OrderManagement.API/Extensions/AuthenticationServiceExtensions.cs`
+
