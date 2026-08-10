@@ -25,7 +25,10 @@ public class DevelopmentAuthenticationService : IAuthenticationService
 
         if (isValid)
         {
-            _logger.LogInformation("Credentials validated successfully for user: {Email}", email);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Credentials validated successfully for user: {Email}", email);
+            }
         }
         else
         {

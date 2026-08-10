@@ -83,25 +83,31 @@ public class LoginCommandHandlerTests
     public async Task Handle_ValidCredentials_LogsSuccessfulLogin()
     {
         var command = new LoginCommand("dev@martech.com", "Senha@123");
+        _mockLogger.Setup(x => x.IsEnabled(LogLevel.Information)).Returns(true);
         _mockAuthService.Setup(x => x.ValidateCredentials(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
         _mockAuthService.Setup(x => x.GetUserRole(It.IsAny<string>())).Returns("Admin");
         _mockJwtService.Setup(x => x.GenerateToken(It.IsAny<string>(), It.IsAny<string>())).Returns("token");
+
         await _handler.Handle(command, CancellationToken.None);
-        _mockLogger.Verify(
-            x => x.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Login successful")),
-                null,
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
+
+        var matchingInvocations = _mockLogger.Invocations
+            .Where(invocation => invocation.Method.Name == nameof(ILogger.Log))
+            .Where(invocation => invocation.Arguments.Count == 5)
+            .Where(invocation => invocation.Arguments[0] is LogLevel && (LogLevel)invocation.Arguments[0] == LogLevel.Information)
+            .Where(invocation => invocation.Arguments[2] is not null)
+            .Where(invocation => invocation.Arguments[2]!.ToString()!.Contains("Login successful", StringComparison.Ordinal))
+            .ToList();
+
+        matchingInvocations.Should().ContainSingle();
     }
 
     [Fact]
     public async Task Handle_InvalidCredentials_LogsWarning()
     {
         var command = new LoginCommand("invalid@email.com", "wrong");
+        _mockLogger.Setup(x => x.IsEnabled(LogLevel.Warning)).Returns(true);
         _mockAuthService.Setup(x => x.ValidateCredentials(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+
         try
         {
             await _handler.Handle(command, CancellationToken.None);
@@ -109,13 +115,15 @@ public class LoginCommandHandlerTests
         catch (UnauthorizedAccessException)
         {
         }
-        _mockLogger.Verify(
-            x => x.Log(
-                LogLevel.Warning,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Invalid credentials")),
-                null,
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
+
+        var matchingInvocations = _mockLogger.Invocations
+            .Where(invocation => invocation.Method.Name == nameof(ILogger.Log))
+            .Where(invocation => invocation.Arguments.Count == 5)
+            .Where(invocation => invocation.Arguments[0] is LogLevel && (LogLevel)invocation.Arguments[0] == LogLevel.Warning)
+            .Where(invocation => invocation.Arguments[2] is not null)
+            .Where(invocation => invocation.Arguments[2]!.ToString()!.Contains("Invalid credentials", StringComparison.Ordinal))
+            .ToList();
+
+        matchingInvocations.Should().ContainSingle();
     }
 }

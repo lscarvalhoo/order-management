@@ -17,7 +17,7 @@ public class JwtTokenService : IJwtTokenService
         _jwtOptions = jwtOptions.Value;
     }
 
-    public string GenerateToken(string email, string role = "User")
+    public string GenerateToken(string email, string role)
     {
         var signingKeyMaterial = _jwtOptions.Key
             ?? throw new InvalidOperationException("JWT signing key is not configured");

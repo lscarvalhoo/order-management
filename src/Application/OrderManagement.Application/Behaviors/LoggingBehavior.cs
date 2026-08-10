@@ -19,37 +19,27 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         var requestName = typeof(TRequest).Name;
         var stopwatch = Stopwatch.StartNew();
 
-        _logger.LogInformation(
-            "Handling {RequestName} - Request: {@Request}",
-            requestName,
-            request);
-
-        try
+        if (_logger.IsEnabled(LogLevel.Information))
         {
-            var response = await next();
+            _logger.LogInformation(
+                "Handling {RequestName} - Request: {@Request}",
+                requestName,
+                request);
+        }
 
-            stopwatch.Stop();
+        var response = await next(cancellationToken);
 
+        stopwatch.Stop();
+
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
             _logger.LogInformation(
                 "Handled {RequestName} in {ElapsedMilliseconds}ms - Response: {@Response}",
                 requestName,
                 stopwatch.ElapsedMilliseconds,
                 response);
-
-            return response;
         }
-        catch (Exception ex)
-        {
-            stopwatch.Stop();
 
-            _logger.LogError(
-                ex,
-                "Error handling {RequestName} after {ElapsedMilliseconds}ms - Request: {@Request}",
-                requestName,
-                stopwatch.ElapsedMilliseconds,
-                request);
-
-            throw;
-        }
+        return response;
     }
 }

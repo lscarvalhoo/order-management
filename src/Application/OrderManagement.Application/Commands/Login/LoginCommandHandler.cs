@@ -22,7 +22,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginCommandRes
 
     public Task<LoginCommandResult> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Processing login command for user: {Email}", request.Email);
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Processing login command for user: {Email}", request.Email);
+        }
 
         if (!_authenticationService.ValidateCredentials(request.Email, request.Password))
         {
@@ -34,7 +37,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginCommandRes
         var token = _jwtTokenService.GenerateToken(request.Email, role);
         var expiresAt = DateTime.UtcNow.AddHours(8);
 
-        _logger.LogInformation("Login successful for user: {Email}", request.Email);
+        if (_logger.IsEnabled(LogLevel.Information))
+        {
+            _logger.LogInformation("Login successful for user: {Email}", request.Email);
+        }
 
         return Task.FromResult(new LoginCommandResult(token, expiresAt));
     }
