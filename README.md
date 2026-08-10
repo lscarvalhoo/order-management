@@ -298,43 +298,75 @@ dotnet test
 
 O projeto inclui configuração do **SonarQube** para análise de qualidade, cobertura de testes e detecção de vulnerabilidades.
 
-### Iniciar SonarQube
+### Análise Local (Recomendado)
+
+Executa a análise usando `dotnet sonarscanner` diretamente, sem Docker:
+
+#### Pré-requisitos
+
+1. Instalar o SonarScanner:
+```powershell
+dotnet tool install --global dotnet-sonarscanner
+```
+
+2. Iniciar uma instância local do SonarQube em http://localhost:9000
+3. Gerar um token em **My Account → Security → Generate Tokens**
+
+#### Executar Análise
 
 **Windows:**
 ```powershell
-.\scripts\sonar.ps1 start
-.\scripts\sonar.ps1 status
+$env:SONAR_TOKEN="seu_token"
+.\scripts\analyze-local.ps1
 ```
 
 **Linux/macOS:**
 ```bash
-chmod +x scripts/sonar.sh
-./scripts/sonar.sh start
-./scripts/sonar.sh status
+SONAR_TOKEN=seu_token ./scripts/analyze-local.sh
 ```
 
-### Executar Análise
+Resultados: http://localhost:9000/dashboard?id=order-management
 
-1. Acesse http://localhost:9000 (credenciais padrão: `admin` / `admin`)
-2. Gere um token em **My Account → Security → Generate Tokens**
-3. Execute:
+### Análise via Docker (Opcional)
+
+Para iniciar o SonarQube via Docker e executar análise containerizada:
 
 **Windows:**
 ```powershell
+.\scripts\sonar.ps1 start
 $env:SONAR_TOKEN="seu_token"
 .\scripts\sonar.ps1 analyze
 ```
 
 **Linux/macOS:**
 ```bash
+chmod +x scripts/sonar.sh
+./scripts/sonar.sh start
 SONAR_TOKEN=seu_token ./scripts/sonar.sh analyze
 ```
-
-4. Resultados: http://localhost:9000/dashboard?id=order-management
 
 ---
 
 ## Documentação da API
+
+### Coleção do Postman
+
+Para facilitar o teste da API, disponibilizamos uma coleção completa do Postman:
+
+**📦 [OrderManagement.postman_collection.json](./OrderManagement.postman_collection.json)**
+
+A coleção inclui:
+- Configuração automática de autenticação JWT
+- Variáveis de ambiente pré-configuradas
+- Scripts para salvar automaticamente o token e IDs
+- **Geração automática de `customerId` aleatório** a cada criação de pedido
+- Todas as rotas documentadas com exemplos
+
+**Como usar:**
+1. Importe o arquivo `OrderManagement.postman_collection.json` no Postman
+2. Execute a requisição "Login" para obter o token JWT
+3. O token será automaticamente usado nas demais requisições
+4. Ao criar um pedido, um `customerId` único será gerado automaticamente
 
 ### Visão Geral
 
@@ -344,6 +376,15 @@ SONAR_TOKEN=seu_token ./scripts/sonar.sh analyze
 | Autenticação | JWT Bearer Token |
 | Formato | `application/json` |
 | Base path | `/api` |
+| URL Local | `http://localhost:5180` |
+
+### Credenciais de Desenvolvimento
+
+| Campo | Valor |
+|---|---|
+| Email | `dev@martech.com` |
+| Senha | `Senha@123` |
+| Role | `Admin` |
 
 ### Fluxo de Consumo
 
