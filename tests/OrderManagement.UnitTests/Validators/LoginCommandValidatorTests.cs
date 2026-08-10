@@ -26,9 +26,9 @@ public class LoginCommandValidatorTests
     [InlineData("")]
     [InlineData(null)]
     [InlineData("   ")]
-    public void Validate_EmptyEmail_ShouldHaveValidationError(string email)
+    public void Validate_EmptyEmail_ShouldHaveValidationError(string? email)
     {
-        var command = new LoginCommand(email, "ValidPassword123");
+        var command = new LoginCommand(email!, "ValidPassword123");
         var result = _validator.Validate(command);
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(e => e.PropertyName == "Email" && e.ErrorMessage == "Email is required");
@@ -51,9 +51,9 @@ public class LoginCommandValidatorTests
     [InlineData("")]
     [InlineData(null)]
     [InlineData("   ")]
-    public void Validate_EmptyPassword_ShouldHaveValidationError(string password)
+    public void Validate_EmptyPassword_ShouldHaveValidationError(string? password)
     {
-        var command = new LoginCommand("dev@martech.com", password);
+        var command = new LoginCommand("dev@martech.com", password!);
         var result = _validator.Validate(command);
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(e => e.PropertyName == "Password" && e.ErrorMessage == "Password is required");

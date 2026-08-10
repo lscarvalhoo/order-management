@@ -57,12 +57,7 @@ public static class OpenTelemetryExtensions
                         activity.SetTag("http.response.status_code", (int)response.StatusCode);
                     };
                 })
-                .AddSqlClientInstrumentation(options =>
-                {
-                    options.SetDbStatementForText = true;
-                    options.RecordException = true;
-                    options.EnableConnectionLevelAttributes = true;
-                })
+                .AddSqlClientInstrumentation()
                 .AddSource("OrderManagement.*")
                 .AddConsoleExporter(options =>
                 {
