@@ -8,8 +8,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 # Determine script and project root directories
-$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$ProjectRoot = Split-Path -Parent $ScriptDir
+$ProjectRoot = Split-Path -Parent $PSScriptRoot
 $ComposeFile = Join-Path $ProjectRoot "build\docker-compose.yml"
 
 function Write-Info {
