@@ -4,6 +4,11 @@
 
 set -e
 
+# Determine script and project root directories
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+SONAR_COMPOSE_FILE="$PROJECT_ROOT/build/docker-compose.sonar.yml"
+
 # Colors
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
@@ -70,7 +75,7 @@ check_docker() {
 
 start_sonarqube() {
 	print_info "Starting SonarQube and PostgreSQL..."
-	docker-compose -f ../build/docker-compose.sonar.yml up -d sonarqube sonarqube-db
+	docker-compose -f "$SONAR_COMPOSE_FILE" up -d sonarqube sonarqube-db
 	print_success "SonarQube started successfully"
 	print_info "SonarQube will be available at http://localhost:9000"
 	print_info "Default credentials: admin/admin (you will be prompted to change)"
@@ -79,19 +84,19 @@ start_sonarqube() {
 
 stop_sonarqube() {
 	print_info "Stopping SonarQube services..."
-	docker-compose -f ../build/docker-compose.sonar.yml down
+	docker-compose -f "$SONAR_COMPOSE_FILE" down
 	print_success "SonarQube stopped successfully"
 }
 
 restart_sonarqube() {
 	print_info "Restarting SonarQube services..."
-	docker-compose -f ../build/docker-compose.sonar.yml restart sonarqube sonarqube-db
+	docker-compose -f "$SONAR_COMPOSE_FILE" restart sonarqube sonarqube-db
 	print_success "SonarQube restarted successfully"
 }
 
 show_logs() {
 	print_info "Showing SonarQube logs (Ctrl+C to exit)..."
-	docker-compose -f ../build/docker-compose.sonar.yml logs -f sonarqube
+	docker-compose -f "$SONAR_COMPOSE_FILE" logs -f sonarqube
 }
 
 run_analysis() {
@@ -102,7 +107,7 @@ run_analysis() {
 	fi
 
 	print_info "Starting code analysis..."
-	docker-compose -f docker-compose.sonar.yml --profile analysis up --build scanner
+	docker-compose -f "$SONAR_COMPOSE_FILE" --profile analysis up --build scanner
 	print_success "Analysis completed! Check results at http://localhost:9000"
 }
 

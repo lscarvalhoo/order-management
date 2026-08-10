@@ -7,6 +7,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Determine script and project root directories
+$ProjectRoot = Split-Path -Parent $PSScriptRoot
+$SonarComposeFile = Join-Path $ProjectRoot "build\docker-compose.sonar.yml"
+
 function Write-Info {
 	param([string]$Message)
 	Write-Host "[INFO] $Message" -ForegroundColor Blue
@@ -73,7 +77,7 @@ function Test-Docker {
 
 function Start-SonarQube {
 	Write-Info "Starting SonarQube and PostgreSQL..."
-	docker-compose -f ../build/docker-compose.sonar.yml up -d sonarqube sonarqube-db
+	docker-compose -f $SonarComposeFile up -d sonarqube sonarqube-db
 	Write-Success "SonarQube started successfully"
 	Write-Info "SonarQube will be available at http://localhost:9000"
 	Write-Info "Default credentials: admin/admin (you will be prompted to change)"
@@ -82,19 +86,19 @@ function Start-SonarQube {
 
 function Stop-SonarQube {
 	Write-Info "Stopping SonarQube services..."
-	docker-compose -f ../build/docker-compose.sonar.yml down
+	docker-compose -f $SonarComposeFile down
 	Write-Success "SonarQube stopped successfully"
 }
 
 function Restart-SonarQube {
 	Write-Info "Restarting SonarQube services..."
-	docker-compose -f ../build/docker-compose.sonar.yml restart sonarqube sonarqube-db
+	docker-compose -f $SonarComposeFile restart sonarqube sonarqube-db
 	Write-Success "SonarQube restarted successfully"
 }
 
 function Show-Logs {
 	Write-Info "Showing SonarQube logs (Ctrl+C to exit)..."
-	docker-compose -f ../build/docker-compose.sonar.yml logs -f sonarqube
+	docker-compose -f $SonarComposeFile logs -f sonarqube
 }
 
 function Start-Analysis {
@@ -105,7 +109,7 @@ function Start-Analysis {
 	}
 
 	Write-Info "Starting code analysis..."
-	docker-compose -f docker-compose.sonar.yml --profile analysis up --build scanner
+	docker-compose -f $SonarComposeFile --profile analysis up --build scanner
 	Write-Success "Analysis completed! Check results at http://localhost:9000"
 }
 
