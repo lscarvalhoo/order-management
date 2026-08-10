@@ -4,7 +4,7 @@ using OrderManagement.Infrastructure.Extensions;
 using OrderManagement.Infrastructure.Persistence;
 using Serilog;
 
-var isTesting = args.Contains("--environment=Testing") || 
+var isTesting = args.Contains("--environment=Testing") ||
                 Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.Equals("Testing", StringComparison.OrdinalIgnoreCase) == true;
 
 if (!isTesting)

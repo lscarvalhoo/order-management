@@ -1,6 +1,5 @@
 using FluentAssertions;
 using Moq;
-using OrderManagement.Application.DTOs;
 using OrderManagement.Application.Queries.GetOrder;
 using OrderManagement.Domain.Entities;
 using OrderManagement.Domain.Enums;

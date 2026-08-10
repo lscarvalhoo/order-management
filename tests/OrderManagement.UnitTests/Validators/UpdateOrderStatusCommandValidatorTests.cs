@@ -1,4 +1,3 @@
-using FluentAssertions;
 using FluentValidation.TestHelper;
 using OrderManagement.Application.Commands.UpdateOrderStatus;
 using OrderManagement.Domain.Enums;

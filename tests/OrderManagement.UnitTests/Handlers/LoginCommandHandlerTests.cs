@@ -2,7 +2,6 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrderManagement.Application.Commands.Login;
-using Xunit;
 
 namespace OrderManagement.UnitTests.Handlers;
 

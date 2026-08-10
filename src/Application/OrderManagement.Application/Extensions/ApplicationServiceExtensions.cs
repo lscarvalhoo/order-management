@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using OrderManagement.Application.Behaviors;
 using OrderManagement.Application.Commands.CreateOrder;
-using System.Diagnostics.CodeAnalysis;
 
 namespace OrderManagement.Application.Extensions;
 

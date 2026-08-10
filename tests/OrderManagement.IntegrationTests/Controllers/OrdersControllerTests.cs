@@ -1,7 +1,7 @@
-using System.Net;
-using System.Net.Http.Json;
 using OrderManagement.Application.DTOs;
 using OrderManagement.Application.Queries.GetAllOrders;
+using System.Net;
+using System.Net.Http.Json;
 
 namespace OrderManagement.IntegrationTests.Controllers;
 

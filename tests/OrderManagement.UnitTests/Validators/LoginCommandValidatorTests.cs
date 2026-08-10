@@ -1,6 +1,5 @@
 using FluentAssertions;
 using OrderManagement.Application.Commands.Login;
-using Xunit;
 
 namespace OrderManagement.UnitTests.Validators;
 
@@ -68,8 +67,8 @@ public class LoginCommandValidatorTests
         var command = new LoginCommand("dev@martech.com", password);
         var result = _validator.Validate(command);
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => 
-            e.PropertyName == "Password" && 
+        result.Errors.Should().Contain(e =>
+            e.PropertyName == "Password" &&
             e.ErrorMessage == "Password must be at least 6 characters");
     }
 
