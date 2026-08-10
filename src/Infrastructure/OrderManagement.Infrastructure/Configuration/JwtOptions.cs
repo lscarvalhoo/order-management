@@ -1,4 +1,4 @@
-namespace OrderManagement.API.Configuration;
+namespace OrderManagement.Infrastructure.Configuration;
 
 public class JwtOptions
 {

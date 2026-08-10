@@ -1,8 +1,9 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrderManagement.API.Configuration;
 using OrderManagement.Application.Commands.Login;
+using OrderManagement.Infrastructure.Configuration;
 
-namespace OrderManagement.API.Services;
+namespace OrderManagement.Infrastructure.Services;
 
 public class DevelopmentAuthenticationService : IAuthenticationService
 {

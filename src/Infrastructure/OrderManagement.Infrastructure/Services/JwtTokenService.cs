@@ -1,12 +1,12 @@
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using OrderManagement.API.Configuration;
 using OrderManagement.Application.Commands.Login;
+using OrderManagement.Infrastructure.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace OrderManagement.API.Services;
+namespace OrderManagement.Infrastructure.Services;
 
 public class JwtTokenService : IJwtTokenService
 {

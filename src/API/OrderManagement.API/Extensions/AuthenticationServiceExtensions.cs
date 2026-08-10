@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using OrderManagement.API.Configuration;
-using OrderManagement.API.Services;
 using OrderManagement.Application.Commands.Login;
+using OrderManagement.Infrastructure.Configuration;
+using OrderManagement.Infrastructure.Services;
 using System.Security.Cryptography;
 using System.Text;
 
