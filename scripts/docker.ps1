@@ -79,48 +79,48 @@ function New-Directories {
 
 function Build-Image {
 	Write-Info "Building Docker image..."
-	docker-compose build --no-cache
+	docker-compose -f ../build/docker-compose.yml build --no-cache
 	Write-Success "Docker image built successfully"
 }
 
 function Start-Services {
 	Write-Info "Starting services..."
 	New-Directories
-	docker-compose up -d
+	docker-compose -f ../build/docker-compose.yml up -d
 	Write-Success "Services started successfully"
 	Write-Info "API is running at http://localhost:5000"
 	Write-Info "Swagger UI is available at http://localhost:5000/swagger"
-	Write-Info "Use '.\docker.ps1 logs' to view logs"
+	Write-Info "Use '.\scripts\docker.ps1 logs' to view logs"
 }
 
 function Stop-Services {
 	Write-Info "Stopping services..."
-	docker-compose down
+	docker-compose -f ../build/docker-compose.yml down
 	Write-Success "Services stopped successfully"
 }
 
 function Restart-Services {
 	Write-Info "Restarting services..."
-	docker-compose restart
+	docker-compose -f ../build/docker-compose.yml restart
 	Write-Success "Services restarted successfully"
 }
 
 function Show-Logs {
 	Write-Info "Showing logs (Ctrl+C to exit)..."
-	docker-compose logs -f
+	docker-compose -f ../build/docker-compose.yml logs -f
 }
 
 function Show-ApiLogs {
 	Write-Info "Showing API logs (Ctrl+C to exit)..."
-	docker-compose logs -f api
+	docker-compose -f ../build/docker-compose.yml logs -f api
 }
 
 function Remove-Volumes {
 	Write-Info "Stopping services and removing volumes..."
-	docker-compose down -v
+	docker-compose -f ../build/docker-compose.yml down -v
 	Write-Warning "Removing data and logs directories..."
-	if (Test-Path "data") { Remove-Item -Path "data" -Recurse -Force }
-	if (Test-Path "logs") { Remove-Item -Path "logs" -Recurse -Force }
+	if (Test-Path "../data") { Remove-Item -Path "../data" -Recurse -Force }
+	if (Test-Path "../logs") { Remove-Item -Path "../logs" -Recurse -Force }
 	Write-Success "Cleanup completed"
 }
 
@@ -158,7 +158,7 @@ function Test-Health {
 
 function Open-Shell {
 	Write-Info "Opening shell in API container..."
-	docker-compose exec api /bin/bash
+	docker-compose -f ../build/docker-compose.yml exec api /bin/bash
 }
 
 # Main script logic

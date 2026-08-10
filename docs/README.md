@@ -154,8 +154,8 @@ Ao adicionar nova documentação:
 - [README Principal](../README.md)
 - [Código Fonte](../src/)
 - [Testes](../tests/)
-- [Scripts Docker](../) (docker.sh, docker.ps1)
-- [Docker Compose](../docker-compose.yml)
+- [Scripts](../scripts/) (docker.sh, docker.ps1, sonar.sh, sonar.ps1)
+- [Configurações Build](../build/) (Docker Compose, Dockerfiles, SonarQube)
 
 ---
 

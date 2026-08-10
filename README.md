@@ -123,9 +123,9 @@ dotnet run
 
 **Windows (PowerShell):**
 ```powershell
-.\docker.ps1 up    # iniciar
-.\docker.ps1 down  # parar
-.\docker.ps1 logs  # logs
+.\scripts\docker.ps1 up    # iniciar
+.\scripts\docker.ps1 down  # parar
+.\scripts\docker.ps1 logs  # logs
 ```
 
 > Se necessário, habilite scripts antes:
@@ -135,10 +135,10 @@ dotnet run
 
 **Linux/macOS:**
 ```bash
-chmod +x docker.sh
-./docker.sh up    # iniciar
-./docker.sh down  # parar
-./docker.sh logs  # logs
+chmod +x scripts/docker.sh
+./scripts/docker.sh up    # iniciar
+./scripts/docker.sh down  # parar
+./scripts/docker.sh logs  # logs
 ```
 
 **Acesso via Docker:**
@@ -224,15 +224,15 @@ O projeto inclui configuração do **SonarQube** para análise de qualidade, cob
 
 **Windows:**
 ```powershell
-.\sonar.ps1 start
-.\sonar.ps1 status
+.\scripts\sonar.ps1 start
+.\scripts\sonar.ps1 status
 ```
 
 **Linux/macOS:**
 ```bash
-chmod +x sonar.sh
-./sonar.sh start
-./sonar.sh status
+chmod +x scripts/sonar.sh
+./scripts/sonar.sh start
+./scripts/sonar.sh status
 ```
 
 ### Executar Análise
@@ -244,12 +244,12 @@ chmod +x sonar.sh
 **Windows:**
 ```powershell
 $env:SONAR_TOKEN="seu_token"
-.\sonar.ps1 analyze
+.\scripts\sonar.ps1 analyze
 ```
 
 **Linux/macOS:**
 ```bash
-SONAR_TOKEN=seu_token ./sonar.sh analyze
+SONAR_TOKEN=seu_token ./scripts/sonar.sh analyze
 ```
 
 4. Resultados: http://localhost:9000/dashboard?id=order-management

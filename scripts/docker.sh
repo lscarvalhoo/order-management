@@ -75,47 +75,47 @@ create_directories() {
 
 build_image() {
 	print_info "Building Docker image..."
-	docker-compose build --no-cache
+	docker-compose -f ../build/docker-compose.yml build --no-cache
 	print_success "Docker image built successfully"
 }
 
 start_services() {
 	print_info "Starting services..."
 	create_directories
-	docker-compose up -d
+	docker-compose -f ../build/docker-compose.yml up -d
 	print_success "Services started successfully"
 	print_info "API is running at http://localhost:5000"
 	print_info "Swagger UI is available at http://localhost:5000/swagger"
-	print_info "Use './docker.sh logs' to view logs"
+	print_info "Use './scripts/docker.sh logs' to view logs"
 }
 
 stop_services() {
 	print_info "Stopping services..."
-	docker-compose down
+	docker-compose -f ../build/docker-compose.yml down
 	print_success "Services stopped successfully"
 }
 
 restart_services() {
 	print_info "Restarting services..."
-	docker-compose restart
+	docker-compose -f ../build/docker-compose.yml restart
 	print_success "Services restarted successfully"
 }
 
 show_logs() {
 	print_info "Showing logs (Ctrl+C to exit)..."
-	docker-compose logs -f
+	docker-compose -f ../build/docker-compose.yml logs -f
 }
 
 show_api_logs() {
 	print_info "Showing API logs (Ctrl+C to exit)..."
-	docker-compose logs -f api
+	docker-compose -f ../build/docker-compose.yml logs -f api
 }
 
 clean_volumes() {
 	print_info "Stopping services and removing volumes..."
-	docker-compose down -v
+	docker-compose -f ../build/docker-compose.yml down -v
 	print_warning "Removing data and logs directories..."
-	rm -rf data logs
+	rm -rf ../data ../logs
 	print_success "Cleanup completed"
 }
 
@@ -148,7 +148,7 @@ check_health() {
 
 open_shell() {
 	print_info "Opening shell in API container..."
-	docker-compose exec api /bin/bash
+	docker-compose -f ../build/docker-compose.yml exec api /bin/bash
 }
 
 # Main script logic
