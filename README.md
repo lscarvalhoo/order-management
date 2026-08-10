@@ -98,82 +98,17 @@ OrderManagement.sln
 ### Pré-requisitos
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop) *(opcional, mas recomendado)*
 
 ---
 
-### **Execução via Docker (Recomendado)**
+### **Execução Local**
 
-> **Executar com Docker garante ambiente isolado, consistente e pronto para produção!**
-
-#### **Windows (PowerShell):**
-```powershell
-# Execute a partir da raiz do projeto (order-management/)
-cd C:\caminho\para\order-management
-
-# Iniciar aplicação
-.\scripts\docker.ps1 up
-
-# Ver logs em tempo real
-.\scripts\docker.ps1 logs
-
-# Parar aplicação
-.\scripts\docker.ps1 down
-
-# Limpar tudo (volumes, containers, imagens)
-.\scripts\docker.ps1 clean
-```
-
-> **Importante:** Os comandos devem ser executados da **raiz do projeto**, não da pasta `scripts/`
+#### **Usando o script auxiliar:**
 
 > **Primeira vez?** Habilite a execução de scripts:
 > ```powershell
 > Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 > ```
-
-#### **Linux/macOS:**
-```bash
-# Execute a partir da raiz do projeto (order-management/)
-cd /caminho/para/order-management
-
-# Tornar script executável (apenas primeira vez)
-chmod +x scripts/docker.sh
-
-# Iniciar aplicação
-./scripts/docker.sh up
-
-# Ver logs
-./scripts/docker.sh logs
-
-# Parar
-./scripts/docker.sh down
-
-# Limpar tudo
-./scripts/docker.sh clean
-```
-
-#### **Acesso via Docker:**
-| Serviço | URL |
-|---------|-----|
-| **API** | http://localhost:5000 |
-| **Swagger UI** | http://localhost:5000/swagger |
-| **Health Check** | http://localhost:5000/health |
-
-**Recursos do Docker:**
-- Migrations aplicadas automaticamente
-- Banco de dados persistente em volume
-- Hot reload habilitado
-- Logs estruturados com Serilog
-- OpenTelemetry configurado
-- Health checks integrados
-
----
-
-### **Execução Local (Desenvolvimento Rápido)**
-
-> **Ideal para desenvolvimento com hot reload e debugging!**
-
-#### **Usando o script auxiliar:**
 
 **Windows:**
 ```powershell
@@ -201,7 +136,7 @@ cd C:\caminho\para\order-management
 # Execute a partir da raiz do projeto (order-management/)
 cd /caminho/para/order-management
 
-# Tornar executável
+# Tornar executável (apenas primeira vez)
 chmod +x scripts/run-local.sh
 
 # Executar API
@@ -229,12 +164,20 @@ cd src/API/OrderManagement.API
 dotnet run
 ```
 
-#### **Acesso local:**
+#### **Acesso:**
 | Serviço | URL |
 |---------|-----|
 | **API** | http://localhost:5180 |
 | **Swagger UI** | http://localhost:5180/swagger |
 | **Health Check** | http://localhost:5180/health |
+
+**Recursos:**
+- Migrations aplicadas automaticamente
+- Banco de dados SQLite local
+- Hot reload habilitado (modo `watch`)
+- Logs estruturados com Serilog
+- OpenTelemetry configurado
+- Health checks integrados
 
 ---
 
