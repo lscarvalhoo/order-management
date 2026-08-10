@@ -59,11 +59,11 @@ public class GetAllOrdersQueryHandlerTests
         result.Page.Should().Be(1);
         result.PageSize.Should().Be(10);
         result.TotalCount.Should().Be(15);
-        result.TotalPages.Should().Be(2); // 15 / 10 = 2 pages
+        result.TotalPages.Should().Be(2);
 
         var firstOrder = result.Items.First();
-        firstOrder.Status.Should().Be(OrderStatus.Pending);
-        firstOrder.TotalAmount.Should().Be(20.00m);
+        firstOrder.Status.Should().Be(OrderStatus.Confirmed);
+        firstOrder.TotalAmount.Should().Be(25.00m);
         firstOrder.Items.Should().HaveCount(1);
 
         _orderRepositoryMock.Verify(x => x.GetPagedAsync(1, 10, It.IsAny<CancellationToken>()), Times.Once);

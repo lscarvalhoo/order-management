@@ -35,7 +35,6 @@ public class OrderRepository : IOrderRepository
         var totalCount = await query.CountAsync(cancellationToken);
 
         var items = await query
-            .OrderByDescending(o => o.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
@@ -59,10 +58,10 @@ public class OrderRepository : IOrderRepository
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var order = await GetByIdAsync(id, cancellationToken);
-        if (order != null)
-        {
-            _context.Orders.Remove(order);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+        if (order is null)
+            throw new KeyNotFoundException($"Order with id {id} not found.");
+
+        _context.Orders.Remove(order);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

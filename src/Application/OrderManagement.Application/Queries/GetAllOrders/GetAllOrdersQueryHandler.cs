@@ -17,20 +17,22 @@ public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, Paged
     {
         var (orders, totalCount) = await _orderRepository.GetPagedAsync(request.Page, request.PageSize, cancellationToken);
 
-        var items = orders.Select(order => new OrderDto
-        {
-            Id = order.Id,
-            CustomerId = order.CustomerId,
-            Status = order.Status,
-            CreatedAt = order.CreatedAt,
-            TotalAmount = order.TotalAmount,
-            Items = order.Items.Select(item => new OrderItemDto
+        var items = orders
+            .OrderByDescending(o => o.CreatedAt)
+            .Select(order => new OrderDto
             {
-                ProductName = item.ProductName,
-                Quantity = item.Quantity,
-                UnitPrice = item.UnitPrice
-            }).ToList()
-        });
+                Id = order.Id,
+                CustomerId = order.CustomerId,
+                Status = order.Status,
+                CreatedAt = order.CreatedAt,
+                TotalAmount = order.TotalAmount,
+                Items = order.Items.Select(item => new OrderItemDto
+                {
+                    ProductName = item.ProductName,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.UnitPrice
+                }).ToList()
+            });
 
         return new PagedResult<OrderDto>
         {
