@@ -1,3 +1,4 @@
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -56,8 +57,15 @@ public class OrdersController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateOrderCommand command, CancellationToken cancellationToken)
     {
-        var order = await _mediator.Send(command, cancellationToken);
-        return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
+        try
+        {
+            var order = await _mediator.Send(command, cancellationToken);
+            return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(new { message = ex.Message, errors = ex.Errors });
+        }
     }
 
     /// <summary>

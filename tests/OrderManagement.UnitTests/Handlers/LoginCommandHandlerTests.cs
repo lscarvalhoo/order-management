@@ -24,7 +24,6 @@ public class LoginCommandHandlerTests
     [Fact]
     public async Task Handle_ValidCredentials_ReturnsTokenAndExpirationDate()
     {
-        // Arrange
         var command = new LoginCommand("dev@martech.com", "Senha@123");
         _mockAuthService
             .Setup(x => x.ValidateCredentials(command.Email, command.Password))
@@ -35,11 +34,7 @@ public class LoginCommandHandlerTests
         _mockJwtService
             .Setup(x => x.GenerateToken(command.Email, "Admin"))
             .Returns("fake-jwt-token");
-
-        // Act
         var result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
         result.Should().NotBeNull();
         result.Token.Should().Be("fake-jwt-token");
         result.ExpiresAt.Should().BeCloseTo(DateTime.UtcNow.AddHours(8), TimeSpan.FromSeconds(5));
@@ -52,16 +47,11 @@ public class LoginCommandHandlerTests
     [Fact]
     public async Task Handle_InvalidCredentials_ThrowsUnauthorizedAccessException()
     {
-        // Arrange
         var command = new LoginCommand("invalid@email.com", "wrongpassword");
         _mockAuthService
             .Setup(x => x.ValidateCredentials(command.Email, command.Password))
             .Returns(false);
-
-        // Act
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
         await act.Should().ThrowAsync<UnauthorizedAccessException>()
             .WithMessage("Invalid username or password");
 
@@ -73,7 +63,6 @@ public class LoginCommandHandlerTests
     [Fact]
     public async Task Handle_ValidCredentials_UserRole_ReturnsTokenWithUserRole()
     {
-        // Arrange
         var command = new LoginCommand("user@martech.com", "UserPass@123");
         _mockAuthService
             .Setup(x => x.ValidateCredentials(command.Email, command.Password))
@@ -84,11 +73,7 @@ public class LoginCommandHandlerTests
         _mockJwtService
             .Setup(x => x.GenerateToken(command.Email, "User"))
             .Returns("user-jwt-token");
-
-        // Act
         var result = await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
         result.Should().NotBeNull();
         result.Token.Should().Be("user-jwt-token");
         _mockJwtService.Verify(x => x.GenerateToken(command.Email, "User"), Times.Once);
@@ -97,16 +82,11 @@ public class LoginCommandHandlerTests
     [Fact]
     public async Task Handle_ValidCredentials_LogsSuccessfulLogin()
     {
-        // Arrange
         var command = new LoginCommand("dev@martech.com", "Senha@123");
         _mockAuthService.Setup(x => x.ValidateCredentials(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
         _mockAuthService.Setup(x => x.GetUserRole(It.IsAny<string>())).Returns("Admin");
         _mockJwtService.Setup(x => x.GenerateToken(It.IsAny<string>(), It.IsAny<string>())).Returns("token");
-
-        // Act
         await _handler.Handle(command, CancellationToken.None);
-
-        // Assert
         _mockLogger.Verify(
             x => x.Log(
                 LogLevel.Information,
@@ -120,21 +100,15 @@ public class LoginCommandHandlerTests
     [Fact]
     public async Task Handle_InvalidCredentials_LogsWarning()
     {
-        // Arrange
         var command = new LoginCommand("invalid@email.com", "wrong");
         _mockAuthService.Setup(x => x.ValidateCredentials(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
-
-        // Act
         try
         {
             await _handler.Handle(command, CancellationToken.None);
         }
         catch (UnauthorizedAccessException)
         {
-            // Expected exception
         }
-
-        // Assert
         _mockLogger.Verify(
             x => x.Log(
                 LogLevel.Warning,

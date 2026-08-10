@@ -16,13 +16,8 @@ public class LoginCommandValidatorTests
     [Fact]
     public void Validate_ValidCommand_ShouldNotHaveValidationErrors()
     {
-        // Arrange
         var command = new LoginCommand("dev@martech.com", "Senha@123");
-
-        // Act
         var result = _validator.Validate(command);
-
-        // Assert
         result.IsValid.Should().BeTrue();
         result.Errors.Should().BeEmpty();
     }
@@ -33,13 +28,8 @@ public class LoginCommandValidatorTests
     [InlineData("   ")]
     public void Validate_EmptyEmail_ShouldHaveValidationError(string email)
     {
-        // Arrange
         var command = new LoginCommand(email, "ValidPassword123");
-
-        // Act
         var result = _validator.Validate(command);
-
-        // Assert
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(e => e.PropertyName == "Email" && e.ErrorMessage == "Email is required");
     }
@@ -51,13 +41,8 @@ public class LoginCommandValidatorTests
     [InlineData("invalid.com")]
     public void Validate_InvalidEmailFormat_ShouldHaveValidationError(string email)
     {
-        // Arrange
         var command = new LoginCommand(email, "ValidPassword123");
-
-        // Act
         var result = _validator.Validate(command);
-
-        // Assert
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(e => e.PropertyName == "Email" && e.ErrorMessage == "Invalid email format");
     }
@@ -68,13 +53,8 @@ public class LoginCommandValidatorTests
     [InlineData("   ")]
     public void Validate_EmptyPassword_ShouldHaveValidationError(string password)
     {
-        // Arrange
         var command = new LoginCommand("dev@martech.com", password);
-
-        // Act
         var result = _validator.Validate(command);
-
-        // Assert
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(e => e.PropertyName == "Password" && e.ErrorMessage == "Password is required");
     }
@@ -85,13 +65,8 @@ public class LoginCommandValidatorTests
     [InlineData("1")]         // 1 character
     public void Validate_PasswordTooShort_ShouldHaveValidationError(string password)
     {
-        // Arrange
         var command = new LoginCommand("dev@martech.com", password);
-
-        // Act
         var result = _validator.Validate(command);
-
-        // Assert
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(e => 
             e.PropertyName == "Password" && 
@@ -105,13 +80,8 @@ public class LoginCommandValidatorTests
     [InlineData("VeryLongPasswordThatIsStillValid")]
     public void Validate_ValidPasswordLength_ShouldNotHaveValidationError(string password)
     {
-        // Arrange
         var command = new LoginCommand("dev@martech.com", password);
-
-        // Act
         var result = _validator.Validate(command);
-
-        // Assert
         result.IsValid.Should().BeTrue();
         result.Errors.Should().NotContain(e => e.PropertyName == "Password");
     }
@@ -119,13 +89,8 @@ public class LoginCommandValidatorTests
     [Fact]
     public void Validate_BothEmailAndPasswordInvalid_ShouldHaveMultipleErrors()
     {
-        // Arrange
         var command = new LoginCommand("invalidemail", "123");
-
-        // Act
         var result = _validator.Validate(command);
-
-        // Assert
         result.IsValid.Should().BeFalse();
         result.Errors.Should().HaveCount(2);
         result.Errors.Should().Contain(e => e.PropertyName == "Email");
@@ -138,13 +103,8 @@ public class LoginCommandValidatorTests
     [InlineData("test.user+tag@domain.co.uk", "Test123!@#")]
     public void Validate_VariousValidInputs_ShouldPass(string email, string password)
     {
-        // Arrange
         var command = new LoginCommand(email, password);
-
-        // Act
         var result = _validator.Validate(command);
-
-        // Assert
         result.IsValid.Should().BeTrue();
         result.Errors.Should().BeEmpty();
     }

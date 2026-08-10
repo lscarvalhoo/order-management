@@ -9,56 +9,50 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
     .CreateBootstrapLogger();
 
-try
+Log.Information("Starting OrderManagement API");
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .ReadFrom.Services(services)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File(
+        "logs/log-.txt",
+        rollingInterval: RollingInterval.Day,
+        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}"));
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerConfiguration();
+builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddApplicationServices();
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
+var app = builder.Build();
+
+if (!app.Environment.IsEnvironment("Testing"))
 {
-    Log.Information("Starting OrderManagement API");
-
-    var builder = WebApplication.CreateBuilder(args);
-
-    builder.Host.UseSerilog((context, services, configuration) => configuration
-        .ReadFrom.Configuration(context.Configuration)
-        .ReadFrom.Services(services)
-        .Enrich.FromLogContext()
-        .WriteTo.Console()
-        .WriteTo.File(
-            "logs/log-.txt",
-            rollingInterval: RollingInterval.Day,
-            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}"));
-
-    builder.Services.AddControllers();
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerConfiguration();
-    builder.Services.AddInfrastructureServices(builder.Configuration);
-    builder.Services.AddApplicationServices();
-    builder.Services.AddJwtAuthentication(builder.Configuration);
-
-    var app = builder.Build();
-
     app.ApplyMigrations();
-
-    // Add Serilog request logging
-    app.UseSerilogRequestLogging();
-
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-    }
-
-    app.UseHttpsRedirection();
-    app.UseAuthentication();
-    app.UseAuthorization();
-
-    app.MapControllers();
-
-    Log.Information("OrderManagement API started successfully");
-    app.Run();
 }
-catch (Exception ex)
+
+// Add Serilog request logging
+app.UseSerilogRequestLogging();
+
+if (app.Environment.IsDevelopment())
 {
-    Log.Fatal(ex, "OrderManagement API terminated unexpectedly");
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
-finally
-{
-    Log.CloseAndFlush();
-}
+
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
+Log.Information("OrderManagement API started successfully");
+app.Run();
+
+public partial class Program { }

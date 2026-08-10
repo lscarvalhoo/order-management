@@ -25,4 +25,8 @@
     <ProjectReference Include="..\..\src\Application\OrderManagement.Application\OrderManagement.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Behaviors\" />
+  </ItemGroup>
+
 </Project>
