@@ -93,7 +93,7 @@ OrderManagement.sln
 
 ---
 
-## 🚀 Como Executar
+## Como Executar
 
 ### Pré-requisitos
 
@@ -102,9 +102,9 @@ OrderManagement.sln
 
 ---
 
-### 🐳 **Execução via Docker (Recomendado)**
+### **Execução via Docker (Recomendado)**
 
-> ✨ **Executar com Docker garante ambiente isolado, consistente e pronto para produção!**
+> **Executar com Docker garante ambiente isolado, consistente e pronto para produção!**
 
 #### **Windows (PowerShell):**
 ```powershell
@@ -121,7 +121,7 @@ OrderManagement.sln
 .\scripts\docker.ps1 clean
 ```
 
-> 💡 **Primeira vez?** Habilite a execução de scripts:
+> **Primeira vez?** Habilite a execução de scripts:
 > ```powershell
 > Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 > ```
@@ -147,23 +147,23 @@ chmod +x scripts/docker.sh
 #### **Acesso via Docker:**
 | Serviço | URL |
 |---------|-----|
-| 🌐 **API** | http://localhost:5000 |
-| 📚 **Swagger UI** | http://localhost:5000/swagger |
-| ❤️ **Health Check** | http://localhost:5000/health |
+| **API** | http://localhost:5000 |
+| **Swagger UI** | http://localhost:5000/swagger |
+| **Health Check** | http://localhost:5000/health |
 
 **Recursos do Docker:**
-- ✅ Migrations aplicadas automaticamente
-- ✅ Banco de dados persistente em volume
-- ✅ Hot reload habilitado
-- ✅ Logs estruturados com Serilog
-- ✅ OpenTelemetry configurado
-- ✅ Health checks integrados
+- Migrations aplicadas automaticamente
+- Banco de dados persistente em volume
+- Hot reload habilitado
+- Logs estruturados com Serilog
+- OpenTelemetry configurado
+- Health checks integrados
 
 ---
 
-### 💻 **Execução Local (Desenvolvimento Rápido)**
+### **Execução Local (Desenvolvimento Rápido)**
 
-> 🔥 **Ideal para desenvolvimento com hot reload e debugging!**
+> **Ideal para desenvolvimento com hot reload e debugging!**
 
 #### **Usando o script auxiliar:**
 
@@ -218,9 +218,9 @@ dotnet run
 #### **Acesso local:**
 | Serviço | URL |
 |---------|-----|
-| 🌐 **API** | http://localhost:5180 |
-| 📚 **Swagger UI** | http://localhost:5180/swagger |
-| ❤️ **Health Check** | http://localhost:5180/health |
+| **API** | http://localhost:5180 |
+| **Swagger UI** | http://localhost:5180/swagger |
+| **Health Check** | http://localhost:5180/health |
 
 ---
 
