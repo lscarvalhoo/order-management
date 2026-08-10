@@ -4,6 +4,11 @@
 
 set -e
 
+# Determine script and project root directories
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+COMPOSE_FILE="$PROJECT_ROOT/build/docker-compose.yml"
+
 # Colors for output
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
@@ -69,20 +74,20 @@ check_docker() {
 
 create_directories() {
 	print_info "Creating necessary directories..."
-	mkdir -p data logs
+	mkdir -p "$PROJECT_ROOT/data" "$PROJECT_ROOT/logs"
 	print_success "Directories created"
 }
 
 build_image() {
 	print_info "Building Docker image..."
-	docker-compose -f ../build/docker-compose.yml build --no-cache
+	docker-compose -f "$COMPOSE_FILE" build --no-cache
 	print_success "Docker image built successfully"
 }
 
 start_services() {
 	print_info "Starting services..."
 	create_directories
-	docker-compose -f ../build/docker-compose.yml up -d
+	docker-compose -f "$COMPOSE_FILE" up -d
 	print_success "Services started successfully"
 	print_info "API is running at http://localhost:5000"
 	print_info "Swagger UI is available at http://localhost:5000/swagger"
@@ -91,31 +96,31 @@ start_services() {
 
 stop_services() {
 	print_info "Stopping services..."
-	docker-compose -f ../build/docker-compose.yml down
+	docker-compose -f "$COMPOSE_FILE" down
 	print_success "Services stopped successfully"
 }
 
 restart_services() {
 	print_info "Restarting services..."
-	docker-compose -f ../build/docker-compose.yml restart
+	docker-compose -f "$COMPOSE_FILE" restart
 	print_success "Services restarted successfully"
 }
 
 show_logs() {
 	print_info "Showing logs (Ctrl+C to exit)..."
-	docker-compose -f ../build/docker-compose.yml logs -f
+	docker-compose -f "$COMPOSE_FILE" logs -f
 }
 
 show_api_logs() {
 	print_info "Showing API logs (Ctrl+C to exit)..."
-	docker-compose -f ../build/docker-compose.yml logs -f api
+	docker-compose -f "$COMPOSE_FILE" logs -f api
 }
 
 clean_volumes() {
 	print_info "Stopping services and removing volumes..."
-	docker-compose -f ../build/docker-compose.yml down -v
+	docker-compose -f "$COMPOSE_FILE" down -v
 	print_warning "Removing data and logs directories..."
-	rm -rf ../data ../logs
+	rm -rf "$PROJECT_ROOT/data" "$PROJECT_ROOT/logs"
 	print_success "Cleanup completed"
 }
 

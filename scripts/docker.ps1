@@ -7,6 +7,11 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Determine script and project root directories
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$ProjectRoot = Split-Path -Parent $ScriptDir
+$ComposeFile = Join-Path $ProjectRoot "build\docker-compose.yml"
+
 function Write-Info {
 	param([string]$Message)
 	Write-Host "[INFO] $Message" -ForegroundColor Blue
@@ -72,21 +77,23 @@ function Test-Docker {
 
 function New-Directories {
 	Write-Info "Creating necessary directories..."
-	New-Item -ItemType Directory -Force -Path "data" | Out-Null
-	New-Item -ItemType Directory -Force -Path "logs" | Out-Null
+	$dataDir = Join-Path $ProjectRoot "data"
+	$logsDir = Join-Path $ProjectRoot "logs"
+	New-Item -ItemType Directory -Force -Path $dataDir | Out-Null
+	New-Item -ItemType Directory -Force -Path $logsDir | Out-Null
 	Write-Success "Directories created"
 }
 
 function Build-Image {
 	Write-Info "Building Docker image..."
-	docker-compose -f ../build/docker-compose.yml build --no-cache
+	docker-compose -f $ComposeFile build --no-cache
 	Write-Success "Docker image built successfully"
 }
 
 function Start-Services {
 	Write-Info "Starting services..."
 	New-Directories
-	docker-compose -f ../build/docker-compose.yml up -d
+	docker-compose -f $ComposeFile up -d
 	Write-Success "Services started successfully"
 	Write-Info "API is running at http://localhost:5000"
 	Write-Info "Swagger UI is available at http://localhost:5000/swagger"
@@ -95,32 +102,34 @@ function Start-Services {
 
 function Stop-Services {
 	Write-Info "Stopping services..."
-	docker-compose -f ../build/docker-compose.yml down
+	docker-compose -f $ComposeFile down
 	Write-Success "Services stopped successfully"
 }
 
 function Restart-Services {
 	Write-Info "Restarting services..."
-	docker-compose -f ../build/docker-compose.yml restart
+	docker-compose -f $ComposeFile restart
 	Write-Success "Services restarted successfully"
 }
 
 function Show-Logs {
 	Write-Info "Showing logs (Ctrl+C to exit)..."
-	docker-compose -f ../build/docker-compose.yml logs -f
+	docker-compose -f $ComposeFile logs -f
 }
 
 function Show-ApiLogs {
 	Write-Info "Showing API logs (Ctrl+C to exit)..."
-	docker-compose -f ../build/docker-compose.yml logs -f api
+	docker-compose -f $ComposeFile logs -f api
 }
 
 function Remove-Volumes {
 	Write-Info "Stopping services and removing volumes..."
-	docker-compose -f ../build/docker-compose.yml down -v
+	docker-compose -f $ComposeFile down -v
 	Write-Warning "Removing data and logs directories..."
-	if (Test-Path "../data") { Remove-Item -Path "../data" -Recurse -Force }
-	if (Test-Path "../logs") { Remove-Item -Path "../logs" -Recurse -Force }
+	$dataDir = Join-Path $ProjectRoot "data"
+	$logsDir = Join-Path $ProjectRoot "logs"
+	if (Test-Path $dataDir) { Remove-Item -Path $dataDir -Recurse -Force }
+	if (Test-Path $logsDir) { Remove-Item -Path $logsDir -Recurse -Force }
 	Write-Success "Cleanup completed"
 }
 
