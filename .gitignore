@@ -28,10 +28,17 @@ TestResults/
 *.coveragexml
 coverage/
 coverage.*
+**/.sonarqube/
+**/.sonar/
 
 # Logs
 *.log
 logs/
+
+# SQLite databases
+*.db
+*.db-shm
+*.db-wal
 
 # Docker volumes and data
 data/

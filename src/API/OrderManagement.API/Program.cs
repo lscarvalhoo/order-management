@@ -4,26 +4,39 @@ using OrderManagement.Infrastructure.Extensions;
 using OrderManagement.Infrastructure.Persistence;
 using Serilog;
 
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
-    .CreateBootstrapLogger();
+var isTesting = args.Contains("--environment=Testing") || 
+                Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.Equals("Testing", StringComparison.OrdinalIgnoreCase) == true;
 
-Log.Information("Starting OrderManagement API");
+if (!isTesting)
+{
+    Log.Logger = new LoggerConfiguration()
+        .WriteTo.Console()
+        .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
+        .CreateBootstrapLogger();
+
+    Log.Information("Starting OrderManagement API");
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog((context, services, configuration) => configuration
-    .ReadFrom.Configuration(context.Configuration)
-    .ReadFrom.Services(services)
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .WriteTo.File(
-        "logs/log-.txt",
-        rollingInterval: RollingInterval.Day,
-        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}"));
+if (!isTesting)
+{
+    builder.Host.UseSerilog((context, services, configuration) => configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .WriteTo.Console()
+        .WriteTo.File(
+            "logs/log-.txt",
+            rollingInterval: RollingInterval.Day,
+            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}"));
+}
 
-builder.Services.AddOpenTelemetryConfiguration(builder.Configuration);
+if (!isTesting)
+{
+    builder.Services.AddOpenTelemetryConfiguration(builder.Configuration);
+}
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfiguration();
@@ -37,10 +50,8 @@ var app = builder.Build();
 if (!app.Environment.IsEnvironment("Testing"))
 {
     app.ApplyMigrations();
+    app.UseSerilogRequestLogging();
 }
-
-// Add Serilog request logging
-app.UseSerilogRequestLogging();
 
 if (app.Environment.IsDevelopment())
 {
@@ -55,7 +66,10 @@ app.UseAuthorization();
 app.MapHealthChecks("/health");
 app.MapControllers();
 
-Log.Information("OrderManagement API started successfully");
+if (!isTesting)
+{
+    Log.Information("OrderManagement API started successfully");
+}
 app.Run();
 
 public partial class Program { }

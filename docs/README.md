@@ -1,10 +1,10 @@
-# 📚 Documentação do Order Management API
+# Documentação do Order Management API
 
 Esta pasta contém toda a documentação técnica do projeto Order Management API.
 
-## 📖 Índice de Documentação
+## Índice de Documentação
 
-### 🐳 Docker
+### Docker
 
 - **[DOCKER.md](DOCKER.md)** - Documentação completa do Docker
   - Pré-requisitos e instalação
@@ -35,7 +35,7 @@ Esta pasta contém toda a documentação técnica do projeto Order Management AP
   - Estatísticas
   - Status final
 
-### 🔐 Autenticação e Segurança
+### Autenticação e Segurança
 
 - **[AUTH.md](AUTH.md)** - Documentação de autenticação
   - JWT Bearer Token
@@ -52,7 +52,7 @@ Esta pasta contém toda a documentação técnica do projeto Order Management AP
   - Políticas de segurança
   - Vulnerabilidades conhecidas
 
-### 📊 Observabilidade
+### Observabilidade
 
 - **[OPENTELEMETRY.md](OPENTELEMETRY.md)** - Documentação do OpenTelemetry
   - Instrumentação
@@ -65,7 +65,17 @@ Esta pasta contém toda a documentação técnica do projeto Order Management AP
   - Traces de cancelamento
   - Hierarquia de spans
 
-### 🔧 Outros
+### Análise de Código
+
+- **[SONARQUBE.md](SONARQUBE.md)** - SonarQube Configuration
+  - Instalação e configuração
+  - Comandos helper (sonar.sh/sonar.ps1)
+  - Execução de análises
+  - Métricas e relatórios
+  - Integração CI/CD
+  - Troubleshooting
+
+###  Outros
 
 - **[REFACTORING_SUMMARY.md](REFACTORING_SUMMARY.md)** - Histórico de refatorações
   - Mudanças realizadas
@@ -89,7 +99,7 @@ Esta pasta contém toda a documentação técnica do projeto Order Management AP
 2. [Checklist Docker](DOCKER_CHECKLIST.md) - Validação
 3. [Implementação Docker](DOCKER_IMPLEMENTATION_SUMMARY.md) - Sumário técnico
 
-## 📁 Estrutura da Documentação
+## Estrutura da Documentação
 
 ```
 docs/
@@ -107,7 +117,7 @@ docs/
 └── REFACTORING_SUMMARY.md                 (histórico)
 ```
 
-## 🎯 Navegação Rápida por Tarefa
+## Navegação Rápida por Tarefa
 
 ### Quero executar a aplicação
 → [DOCKER_QUICKSTART.md](DOCKER_QUICKSTART.md)
@@ -130,7 +140,7 @@ docs/
 ### Quero configurações de segurança
 → [SECURITY.md](SECURITY.md)
 
-## 📝 Contribuindo com a Documentação
+## Contribuindo com a Documentação
 
 Ao adicionar nova documentação:
 1. Coloque arquivos `.md` nesta pasta `docs/`
@@ -139,7 +149,7 @@ Ao adicionar nova documentação:
 4. Use emojis para facilitar identificação
 5. Inclua links entre documentos relacionados
 
-## 🔗 Links Úteis
+## Links Úteis
 
 - [README Principal](../README.md)
 - [Código Fonte](../src/)

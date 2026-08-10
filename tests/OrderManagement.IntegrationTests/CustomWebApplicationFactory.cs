@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,19 +11,12 @@ namespace OrderManagement.IntegrationTests;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
-    private static int _databaseCounter = 0;
-    private readonly string _databaseName;
-
-    public CustomWebApplicationFactory()
-    {
-        _databaseName = $"InMemoryTestDb_{Interlocked.Increment(ref _databaseCounter)}";
-    }
+    private SqliteConnection? _connection;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
 
-        // Configure test settings
         builder.ConfigureAppConfiguration((context, config) =>
         {
             config.AddInMemoryCollection(new Dictionary<string, string?>
@@ -38,16 +32,34 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
-            // Remove all DbContext related registrations
-            services.RemoveAll(typeof(ApplicationDbContext));
-            services.RemoveAll(typeof(DbContextOptions<ApplicationDbContext>));
-            services.RemoveAll<DbContextOptions>();
+            var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
+            if (descriptor != null)
+            {
+                services.Remove(descriptor);
+            }
 
-            // Add DbContext using in-memory database for tests with unique name
+            _connection = new SqliteConnection("DataSource=:memory:");
+            _connection.Open();
+
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseInMemoryDatabase(_databaseName);
+                options.UseSqlite(_connection);
             });
+
+            var serviceProvider = services.BuildServiceProvider();
+            using var scope = serviceProvider.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            db.Database.EnsureCreated();
         });
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _connection?.Close();
+            _connection?.Dispose();
+        }
+        base.Dispose(disposing);
     }
 }

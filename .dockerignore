@@ -25,6 +25,9 @@ logs/
 TestResults/
 **/coverage.json
 **/coverage.cobertura.xml
+**/coverage.opencover.xml
+**/.sonarqube/
+**/.sonar/
 
 # OS files
 .DS_Store

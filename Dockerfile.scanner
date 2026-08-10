@@ -1,0 +1,69 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0
+
+# Install Java (required for SonarScanner)
+RUN apt-get update && \
+	apt-get install -y openjdk-17-jdk wget unzip && \
+	apt-get clean && \
+	rm -rf /var/lib/apt/lists/*
+
+# Install SonarScanner for .NET
+RUN dotnet tool install --global dotnet-sonarscanner
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+# Install ReportGenerator for coverage
+RUN dotnet tool install --global dotnet-reportgenerator-globaltool
+
+# Set working directory
+WORKDIR /src
+
+# Copy solution and project files
+COPY ["OrderManagement.sln", "./"]
+COPY ["src/API/OrderManagement.API/OrderManagement.API.csproj", "src/API/OrderManagement.API/"]
+COPY ["src/Application/OrderManagement.Application/OrderManagement.Application.csproj", "src/Application/OrderManagement.Application/"]
+COPY ["src/Domain/OrderManagement.Domain/OrderManagement.Domain.csproj", "src/Domain/OrderManagement.Domain/"]
+COPY ["src/Infrastructure/OrderManagement.Infrastructure/OrderManagement.Infrastructure.csproj", "src/Infrastructure/OrderManagement.Infrastructure/"]
+COPY ["tests/OrderManagement.UnitTests/OrderManagement.UnitTests.csproj", "tests/OrderManagement.UnitTests/"]
+COPY ["tests/OrderManagement.IntegrationTests/OrderManagement.IntegrationTests.csproj", "tests/OrderManagement.IntegrationTests/"]
+
+# Restore dependencies
+RUN dotnet restore "OrderManagement.sln"
+
+# Copy the rest of the code
+COPY . .
+
+# Create a script to run the analysis
+RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+echo "Starting SonarQube analysis..."\n\
+\n\
+# Begin SonarScanner\n\
+dotnet sonarscanner begin \\\n\
+  /k:"${SONAR_PROJECT_KEY}" \\\n\
+  /n:"${SONAR_PROJECT_NAME}" \\\n\
+  /v:"${SONAR_PROJECT_VERSION}" \\\n\
+  /d:sonar.host.url="${SONAR_HOST_URL}" \\\n\
+  /d:sonar.token="${SONAR_TOKEN}" \\\n\
+  /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \\\n\
+  /d:sonar.coverage.exclusions="**/Program.cs,**/Migrations/**,**/*Tests/**" \\\n\
+  /d:sonar.exclusions="**/Migrations/**,**/obj/**,**/bin/**"\n\
+\n\
+# Build the solution\n\
+dotnet build OrderManagement.sln --configuration Release --no-restore\n\
+\n\
+# Run tests with coverage\n\
+dotnet test OrderManagement.sln \\\n\
+  --configuration Release \\\n\
+  --no-build \\\n\
+  --collect:"XPlat Code Coverage" \\\n\
+  --results-directory ./TestResults \\\n\
+  -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover\n\
+\n\
+# End SonarScanner\n\
+dotnet sonarscanner end /d:sonar.token="${SONAR_TOKEN}"\n\
+\n\
+echo "SonarQube analysis completed!"\n\
+' > /usr/local/bin/run-analysis.sh && chmod +x /usr/local/bin/run-analysis.sh
+
+# Set entrypoint
+ENTRYPOINT ["/usr/local/bin/run-analysis.sh"]

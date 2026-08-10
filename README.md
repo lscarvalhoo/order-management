@@ -1,280 +1,465 @@
-# OrderManagement
+﻿# OrderManagement
 
-API para gerenciamento de pedidos, com foco em organização, manutenibilidade e testabilidade.
+API REST para gerenciamento de pedidos, construída com .NET 10 seguindo os princípios de Clean Architecture, CQRS e boas práticas de engenharia de software.
 
-## Documentacao da API
+---
 
-Esta documentacao descreve o fluxo recomendado para consumir a API, os endpoints disponiveis e os principais contratos de entrada e saida.
+## Sumário
 
-## Visao Geral
+- [Stack](#stack)
+- [Arquitetura](#arquitetura)
+- [Domínio](#domínio)
+- [Como Executar](#como-executar)
+- [Banco de Dados](#banco-de-dados)
+- [Testes](#testes)
+- [Observabilidade](#observabilidade)
+- [Análise de Código](#análise-de-código)
+- [Documentação da API](#documentação-da-api)
 
-- Estilo: REST
-- Autenticacao: JWT Bearer Token
-- Formato de dados: JSON
-- Base path: /api
+---
 
-## Fluxo Recomendado de Consumo
+## Stack
 
-1. Autenticar com credenciais validas em POST /api/auth/login.
-2. Receber token JWT e data de expiracao.
-3. Enviar o token no header Authorization para os endpoints protegidos.
-4. Criar pedidos, consultar pedidos e cancelar pedidos conforme regra de negocio.
+| Camada | Tecnologia |
+|---|---|
+| Runtime | .NET 10 |
+| API | ASP.NET Core Controllers |
+| ORM | Entity Framework Core + SQLite |
+| CQRS | MediatR |
+| Validação | FluentValidation |
+| Autenticação | JWT Bearer |
+| Logging | Serilog |
+| Rastreamento | OpenTelemetry |
+| Testes | xUnit + Moq + FluentAssertions |
+| Containers | Docker + Docker Compose |
+| Qualidade | SonarQube |
 
-## Autenticacao
+---
 
-### Endpoint
+## Arquitetura
 
-- Metodo: POST
-- Rota: /api/auth/login
+A solução segue **Clean Architecture** com dependências sempre apontando para camadas internas.
 
-### Requisicao
-
-Body JSON esperado:
-
-{
-    "username": "dev@martech.com",
-    "password": "Senha@123"
-}
-
-### Resposta de sucesso (200)
-
-{
-    "token": "jwt-token",
-    "expiresAt": "2026-08-09T20:00:00Z"
-}
-
-### Possiveis erros
-
-- 400 Bad Request: dados invalidos (formato de email, senha vazia, etc.)
-- 401 Unauthorized: credenciais invalidas
-
-### Uso do token
-
-Enviar em todos os endpoints protegidos:
-
-Authorization: Bearer SEU_TOKEN_JWT
-
-## Pedidos (Orders)
-
-Todos os endpoints abaixo exigem autenticacao.
-
-### 1) Listar pedidos
-
-- Metodo: GET
-- Rota: /api/orders
-- Query params:
-    - page (opcional, padrao 1)
-    - pageSize (opcional, padrao 10)
-
-Resposta de sucesso (200):
-
-{
-    "items": [
-        {
-            "id": "00000000-0000-0000-0000-000000000001",
-            "customerId": "00000000-0000-0000-0000-000000000010",
-            "status": "Pending",
-            "createdAt": "2026-08-09T12:00:00Z",
-            "totalAmount": 150.0,
-            "items": [
-                {
-                    "productName": "Produto A",
-                    "quantity": 2,
-                    "unitPrice": 50.0
-                }
-            ]
-        }
-    ],
-    "page": 1,
-    "pageSize": 10,
-    "totalCount": 1
-}
-
-### 2) Buscar pedido por ID
-
-- Metodo: GET
-- Rota: /api/orders/{id}
-
-Resposta de sucesso (200):
-
-{
-    "id": "00000000-0000-0000-0000-000000000001",
-    "customerId": "00000000-0000-0000-0000-000000000010",
-    "status": "Pending",
-    "createdAt": "2026-08-09T12:00:00Z",
-    "totalAmount": 150.0,
-    "items": [
-        {
-            "productName": "Produto A",
-            "quantity": 2,
-            "unitPrice": 50.0
-        }
-    ]
-}
-
-Possiveis erros:
-
-- 404 Not Found: pedido nao encontrado
-
-### 3) Criar pedido
-
-- Metodo: POST
-- Rota: /api/orders
-
-Body JSON esperado:
-
-{
-    "customerId": "00000000-0000-0000-0000-000000000010",
-    "items": [
-        {
-            "productName": "Produto A",
-            "quantity": 2,
-            "unitPrice": 50.0
-        }
-    ]
-}
-
-Resposta de sucesso (201 Created):
-
-{
-    "id": "00000000-0000-0000-0000-000000000001",
-    "customerId": "00000000-0000-0000-0000-000000000010",
-    "status": "Pending",
-    "createdAt": "2026-08-09T12:00:00Z",
-    "totalAmount": 100.0,
-    "items": [
-        {
-            "productName": "Produto A",
-            "quantity": 2,
-            "unitPrice": 50.0
-        }
-    ]
-}
-
-### 4) Cancelar pedido
-
-- Metodo: PATCH
-- Rota: /api/orders/{id}/cancel
-
-Regra de negocio:
-
-- Apenas pedidos com status Pending podem ser cancelados.
-
-Resposta de sucesso:
-
-- 204 No Content
-
-Possiveis erros:
-
-- 400 Bad Request: pedido em status que nao permite cancelamento
-- 404 Not Found: pedido nao encontrado
-
-## Padrao de Erros
-
-As respostas de erro seguem formato JSON com mensagem descritiva. Exemplo:
-
-{
-    "message": "Order with ID ... not found"
-}
-
-## Visão da Arquitetura
-
-A solução segue os princípios da **Clean Architecture**, em que as dependências sempre apontam para as camadas mais internas da aplicação.
-
-- `Domain` não depende de nenhuma outra camada.
-- `Application` depende apenas de `Domain`.
-- `Infrastructure` depende de `Application` e `Domain`.
-- `API` depende de `Application` e `Infrastructure`, sendo a última utilizada para configuração da aplicação (injeção de dependências, banco de dados, logging, etc.).
-
-## Estrutura da Solução
-
-```text
+```
 OrderManagement.sln
 ├── src/
-│   ├── API/
-│   │   └── OrderManagement.API/                 (ASP.NET Core Web API - .NET 10)
-│   ├── Application/
-│   │   └── OrderManagement.Application/         (Class Library - .NET 10)
-│   ├── Domain/
-│   │   └── OrderManagement.Domain/              (Class Library - .NET 10)
-│   └── Infrastructure/
-│       └── OrderManagement.Infrastructure/      (Class Library - .NET 10)
+│   ├── Domain/           ← entidades, enums, interfaces (sem dependências externas)
+│   ├── Application/      ← commands, queries, DTOs, behaviors (depende de Domain)
+│   ├── Infrastructure/   ← EF Core, repositórios, migrações (depende de Application)
+│   └── API/              ← controllers, middleware, DI (depende de Application e Infrastructure)
 └── tests/
-    ├── OrderManagement.UnitTests/               (xUnit)
-    └── OrderManagement.IntegrationTests/        (xUnit + WebApplicationFactory)
+    ├── OrderManagement.UnitTests/         ← handlers e validators (xUnit)
+    └── OrderManagement.IntegrationTests/  ← endpoints (WebApplicationFactory)
 ```
 
-## Observabilidade
+### Por que Controllers e não Minimal API?
 
-### OpenTelemetry
+- Melhor organização para múltiplos endpoints relacionados (`AuthController`, `OrdersController`)
+- Alinhamento natural com Clean Architecture e CQRS
+- Integração nativa do Swagger com `[Authorize]` e `[ProducesResponseType]`
+- Testabilidade direta com injeção de dependências e mocks
 
-O projeto implementa **OpenTelemetry** para rastreamento distribuído com export para console:
+---
 
-- Instrumentação automática de requisições HTTP
-- Rastreamento de operações de banco de dados (SQLite)
-- Spans customizados para operações de negócio
-- Tags contextuais para cada operação
-- Captura de exceções
+## Domínio
 
-### Logging com Serilog
+### Order
 
-- Logs estruturados
-- Output para console e arquivo
-- Request/response logging com pipeline behavior
-- Tempo de execução de cada comando/query
+| Campo | Tipo | Descrição |
+|---|---|---|
+| `Id` | `Guid` | Identificador único |
+| `CustomerId` | `Guid` | Identificador do cliente |
+| `Status` | `enum` | `Pending`, `Confirmed`, `Cancelled` |
+| `CreatedAt` | `DateTime` | Data de criação (UTC) |
+| `Items` | `List<OrderItem>` | Itens do pedido |
+| `TotalAmount` | `decimal` | Calculado no domínio: ∑ UnitPrice × Quantity |
 
-## Docker
+### OrderItem
 
-O projeto pode ser executado completamente em containers Docker, facilitando o deployment e garantindo consistência entre ambientes.
+| Campo | Tipo | Descrição |
+|---|---|---|
+| `Id` | `Guid` | Identificador único |
+| `OrderId` | `Guid` | Referência ao pedido |
+| `ProductName` | `string` | Nome do produto |
+| `Quantity` | `int` | Quantidade (> 0) |
+| `UnitPrice` | `decimal` | Preço unitário (> 0) |
 
-### Quick Start
+### Regras de Negócio
+
+- Um pedido deve ter **pelo menos 1 item**.
+- `UnitPrice` e `Quantity` devem ser **maiores que zero**.
+- Apenas pedidos com status **`Pending`** podem ser cancelados.
+- `TotalAmount` é calculado na entidade de domínio, não na camada de aplicação.
+
+---
+
+## Como Executar
+
+### Pré-requisitos
+
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) *(opcional)*
+
+### Execução Local
+
+```bash
+# 1. Clone o repositório
+git clone https://github.com/lscarvalhoo/order-management.git
+cd order-management
+
+# 2. Restaure as dependências
+dotnet restore
+
+# 3. Execute a API
+cd src/API/OrderManagement.API
+dotnet run
+```
+
+**Acesso:**
+- API: http://localhost:5180
+- Swagger: http://localhost:5180/swagger
+
+### Execução via Docker
 
 **Windows (PowerShell):**
 ```powershell
-.\docker.ps1 build
-.\docker.ps1 up
+.\docker.ps1 up    # iniciar
+.\docker.ps1 down  # parar
+.\docker.ps1 logs  # logs
 ```
+
+> Se necessário, habilite scripts antes:
+> ```powershell
+> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+> ```
 
 **Linux/macOS:**
 ```bash
 chmod +x docker.sh
-./docker.sh build
-./docker.sh up
+./docker.sh up    # iniciar
+./docker.sh down  # parar
+./docker.sh logs  # logs
 ```
 
-### Recursos Docker
+**Acesso via Docker:**
+- API: http://localhost:5000
+- Swagger: http://localhost:5000/swagger
+- Health Check: http://localhost:5000/health
 
-- Multi-stage build otimizado
-- Health check automático
-- Volumes persistentes para dados e logs
-- Scripts helper para Windows e Linux
-- Configuração via variáveis de ambiente
-- Imagens baseadas em .NET 10
+---
 
-### Acesso
+## Banco de Dados
 
-Após iniciar os containers:
-- **API**: http://localhost:5000
-- **Swagger**: http://localhost:5000/swagger
-- **Health Check**: http://localhost:5000/health
+O projeto usa **SQLite** com migrations aplicadas automaticamente na inicialização.
 
+| Ambiente | Localização |
+|---|---|
+| Local | `src/API/OrderManagement.API/ordermanagement.db` |
+| Docker | `./data/ordermanagement.db` (volume montado) |
 
-## Por que Controllers e não Minimal API?
+### Schema
 
-Apesar do .NET 10 oferecer suporte para **Minimal APIs**, este projeto utiliza **Controllers** porque:
+```sql
+CREATE TABLE Orders (
+    Id         TEXT    PRIMARY KEY,
+    CustomerId TEXT    NOT NULL,
+    Status     INTEGER NOT NULL,
+    CreatedAt  TEXT    NOT NULL
+);
 
-- **Organização**: Melhor para projetos com múltiplos endpoints relacionados (AuthController, OrdersController)
-- **Clean Architecture**: Alinha perfeitamente com a separação em camadas e CQRS
-- **Manutenibilidade**: Código mais explícito, facilita onboarding de novos desenvolvedores
-- **Testabilidade**: Injeção de dependências tradicional e mock direto
-- **Swagger**: Integração nativa com attributes `[Authorize]`, `[ProducesResponseType]`, etc.
-- **Boas práticas**: Estrutura profissional preparada para crescimento futuro
+CREATE TABLE OrderItems (
+    Id          TEXT    PRIMARY KEY,
+    OrderId     TEXT    NOT NULL,
+    ProductName TEXT    NOT NULL,
+    Quantity    INTEGER NOT NULL,
+    UnitPrice   REAL    NOT NULL,
+    FOREIGN KEY (OrderId) REFERENCES Orders(Id) ON DELETE CASCADE
+);
+```
 
-## Projetos
+### Ferramentas para acesso ao banco
 
-- `OrderManagement.API`
-- `OrderManagement.Application`
-- `OrderManagement.Domain`
-- `OrderManagement.Infrastructure`
-- `OrderManagement.UnitTests`
-- `OrderManagement.IntegrationTests`
+- **CLI:** `sqlite3 src/API/OrderManagement.API/ordermanagement.db`
+- **GUI:** [DB Browser for SQLite](https://sqlitebrowser.org/dl/)
+- **VS Code:** extensão *SQLite Viewer*
+
+---
+
+## Testes
+
+```bash
+# Unitários
+dotnet test tests/OrderManagement.UnitTests/
+
+# Integração
+dotnet test tests/OrderManagement.IntegrationTests/
+
+# Todos
+dotnet test
+```
+
+---
+
+## Observabilidade
+
+### Serilog
+
+- Logs estruturados em console e arquivo (`logs/log-YYYYMMDD.txt`)
+- Pipeline behavior que registra request/response e tempo de execução de cada command/query
+
+### OpenTelemetry
+
+- Instrumentação automática de requisições HTTP
+- Rastreamento de operações de banco de dados (SQLite)
+- Spans customizados para operações de negócio
+- Exportação para console
+
+---
+
+## Análise de Código
+
+O projeto inclui configuração do **SonarQube** para análise de qualidade, cobertura de testes e detecção de vulnerabilidades.
+
+### Iniciar SonarQube
+
+**Windows:**
+```powershell
+.\sonar.ps1 start
+.\sonar.ps1 status
+```
+
+**Linux/macOS:**
+```bash
+chmod +x sonar.sh
+./sonar.sh start
+./sonar.sh status
+```
+
+### Executar Análise
+
+1. Acesse http://localhost:9000 (credenciais padrão: `admin` / `admin`)
+2. Gere um token em **My Account → Security → Generate Tokens**
+3. Execute:
+
+**Windows:**
+```powershell
+$env:SONAR_TOKEN="seu_token"
+.\sonar.ps1 analyze
+```
+
+**Linux/macOS:**
+```bash
+SONAR_TOKEN=seu_token ./sonar.sh analyze
+```
+
+4. Resultados: http://localhost:9000/dashboard?id=order-management
+
+---
+
+## Documentação da API
+
+### Visão Geral
+
+| Item | Valor |
+|---|---|
+| Estilo | REST |
+| Autenticação | JWT Bearer Token |
+| Formato | `application/json` |
+| Base path | `/api` |
+
+### Fluxo de Consumo
+
+1. Autenticar via `POST /api/auth/login` para obter o JWT.
+2. Incluir o token no header `Authorization: Bearer <token>` em todas as demais requisições.
+3. Operar sobre pedidos com os endpoints abaixo.
+
+---
+
+### Endpoints
+
+| Método | Rota | Auth | Descrição |
+|---|---|---|---|
+| `POST` | `/api/auth/login` | — | Autenticação, retorna JWT |
+| `GET` | `/api/orders` | ✓ | Lista pedidos com paginação |
+| `GET` | `/api/orders/{id}` | ✓ | Busca pedido por ID |
+| `POST` | `/api/orders` | ✓ | Cria um novo pedido |
+| `PATCH` | `/api/orders/{id}/cancel` | ✓ | Cancela um pedido |
+
+---
+
+### POST `/api/auth/login`
+
+Autentica o usuário e retorna um token JWT válido por 8 horas.
+
+**Request body**
+```json
+{
+  "username": "dev@martech.com",
+  "password": "Senha@123"
+}
+```
+
+**Responses**
+
+| Status | Descrição |
+|---|---|
+| `200 OK` | Login realizado com sucesso |
+| `400 Bad Request` | Dados inválidos (e-mail malformado, senha vazia, etc.) |
+| `401 Unauthorized` | Credenciais incorretas |
+
+**200 – Body**
+```json
+{
+  "token": "eyJhbGci...",
+  "expiresAt": "2026-08-10T04:00:00Z"
+}
+```
+
+---
+
+### GET `/api/orders`
+
+Lista pedidos com paginação.
+
+**Query parameters**
+
+| Parâmetro | Tipo | Obrigatório | Padrão | Descrição |
+|---|---|---|---|---|
+| `page` | `integer` | não | `1` | Número da página |
+| `pageSize` | `integer` | não | `10` | Itens por página |
+
+**Responses**
+
+| Status | Descrição |
+|---|---|
+| `200 OK` | Lista paginada retornada |
+| `401 Unauthorized` | Token ausente ou inválido |
+
+**200 – Body**
+```json
+{
+  "items": [
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "customerId": "9b3f1c2e-4d5a-4e6b-8c7d-0e1f2a3b4c5d",
+      "status": "Pending",
+      "createdAt": "2026-08-10T12:00:00Z",
+      "totalAmount": 150.00,
+      "items": [
+        {
+          "productName": "Produto A",
+          "quantity": 2,
+          "unitPrice": 50.00
+        },
+        {
+          "productName": "Produto B",
+          "quantity": 1,
+          "unitPrice": 50.00
+        }
+      ]
+    }
+  ],
+  "page": 1,
+  "pageSize": 10,
+  "totalCount": 1
+}
+```
+
+---
+
+### GET `/api/orders/{id}`
+
+Retorna os detalhes de um pedido específico.
+
+**Path parameters**
+
+| Parâmetro | Tipo | Descrição |
+|---|---|---|
+| `id` | `uuid` | Identificador do pedido |
+
+**Responses**
+
+| Status | Descrição |
+|---|---|
+| `200 OK` | Pedido encontrado |
+| `401 Unauthorized` | Token ausente ou inválido |
+| `404 Not Found` | Pedido não encontrado |
+
+**200 – Body**
+```json
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "customerId": "9b3f1c2e-4d5a-4e6b-8c7d-0e1f2a3b4c5d",
+  "status": "Pending",
+  "createdAt": "2026-08-10T12:00:00Z",
+  "totalAmount": 100.00,
+  "items": [
+    {
+      "productName": "Produto A",
+      "quantity": 2,
+      "unitPrice": 50.00
+    }
+  ]
+}
+```
+
+---
+
+### POST `/api/orders`
+
+Cria um novo pedido com status inicial `Pending`.
+
+**Request body**
+```json
+{
+  "customerId": "9b3f1c2e-4d5a-4e6b-8c7d-0e1f2a3b4c5d",
+  "items": [
+    {
+      "productName": "Produto A",
+      "quantity": 2,
+      "unitPrice": 50.00
+    }
+  ]
+}
+```
+
+**Responses**
+
+| Status | Descrição |
+|---|---|
+| `201 Created` | Pedido criado; header `Location` aponta para o recurso |
+| `400 Bad Request` | Dados inválidos (sem itens, preço/quantidade ≤ 0, etc.) |
+| `401 Unauthorized` | Token ausente ou inválido |
+
+---
+
+### PATCH `/api/orders/{id}/cancel`
+
+Cancela um pedido. Só é permitido para pedidos com status `Pending`.
+
+**Path parameters**
+
+| Parâmetro | Tipo | Descrição |
+|---|---|---|
+| `id` | `uuid` | Identificador do pedido |
+
+**Responses**
+
+| Status | Descrição |
+|---|---|
+| `204 No Content` | Pedido cancelado com sucesso |
+| `400 Bad Request` | Status atual não permite cancelamento |
+| `401 Unauthorized` | Token ausente ou inválido |
+| `404 Not Found` | Pedido não encontrado |
+
+---
+
+### Padrão de Erros
+
+Todas as respostas de erro retornam JSON no formato:
+
+```json
+{
+  "message": "Descrição do erro"
+}
+```
