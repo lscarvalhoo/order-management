@@ -49,8 +49,9 @@ dotnet sonarscanner begin \
 	/n:"$PROJECT_NAME" \
 	/d:sonar.host.url="$SONAR_URL" \
 	/d:sonar.token="$SONAR_TOKEN" \
-	/d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
-	/d:sonar.exclusions="**/bin/**,**/obj/**,**/migrations/**,**/wwwroot/**"
+	/d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.opencover.xml" \
+	/d:sonar.exclusions="**/bin/**,**/obj/**,**/Migrations/**,**/wwwroot/**" \
+	/d:sonar.coverage.exclusions="**/Program.cs,**/Migrations/*.cs,**/*Tests/**,**/*Test.cs,**/DatabaseMigrationExtensions.cs,**/OpenTelemetryExtensions.cs,**/DTOs/**,**/Entities/**"
 
 # Build the solution
 print_info "Step 2/3: Building solution"

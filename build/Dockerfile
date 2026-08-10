@@ -3,18 +3,19 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine3.22 AS build
 RUN addgroup -S appgroup \
     && adduser -S appuser -G appgroup \
     && mkdir -p /source /work /app /home/appuser/.nuget/packages \
-    && chown -R appuser:appgroup /source /work /app /home/appuser
+    && chown -R appuser:appgroup /work /app /home/appuser \
+    && chmod 755 /source
 ENV HOME=/home/appuser
 ENV NUGET_PACKAGES=/home/appuser/.nuget/packages
 USER appuser
 WORKDIR /source
 
 # Copy solution and project files
-COPY --chown=appuser:appgroup --chmod=444 ["OrderManagement.sln", "./"]
-COPY --chown=appuser:appgroup --chmod=444 ["src/API/OrderManagement.API/OrderManagement.API.csproj", "src/API/OrderManagement.API/"]
-COPY --chown=appuser:appgroup --chmod=444 ["src/Application/OrderManagement.Application/OrderManagement.Application.csproj", "src/Application/OrderManagement.Application/"]
-COPY --chown=appuser:appgroup --chmod=444 ["src/Domain/OrderManagement.Domain/OrderManagement.Domain.csproj", "src/Domain/OrderManagement.Domain/"]
-COPY --chown=appuser:appgroup --chmod=444 ["src/Infrastructure/OrderManagement.Infrastructure/OrderManagement.Infrastructure.csproj", "src/Infrastructure/OrderManagement.Infrastructure/"]
+COPY --chmod=444 ["OrderManagement.sln", "./"]
+COPY --chmod=444 ["src/API/OrderManagement.API/OrderManagement.API.csproj", "src/API/OrderManagement.API/"]
+COPY --chmod=444 ["src/Application/OrderManagement.Application/OrderManagement.Application.csproj", "src/Application/OrderManagement.Application/"]
+COPY --chmod=444 ["src/Domain/OrderManagement.Domain/OrderManagement.Domain.csproj", "src/Domain/OrderManagement.Domain/"]
+COPY --chmod=444 ["src/Infrastructure/OrderManagement.Infrastructure/OrderManagement.Infrastructure.csproj", "src/Infrastructure/OrderManagement.Infrastructure/"]
 RUN cp -R /source/. /work/ \
     && chmod -R u+w /work
 
@@ -24,7 +25,7 @@ RUN dotnet restore "src/API/OrderManagement.API/OrderManagement.API.csproj"
 
 # Copy application source only
 WORKDIR /source
-COPY --chown=appuser:appgroup --chmod=555 ["src/", "src/"]
+COPY --chmod=555 ["src/", "src/"]
 RUN cp -R /source/src/. /work/src/ \
     && chmod -R u+w /work/src
 
@@ -41,7 +42,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine3.22 AS final
 RUN addgroup -S appgroup \
     && adduser -S appuser -G appgroup \
     && mkdir -p /app /app/data /app/logs \
-    && chown -R appuser:appgroup /app
+    && chown -R appuser:appgroup /app/data /app/logs
 WORKDIR /app
 
 # Expose ports
@@ -49,7 +50,7 @@ EXPOSE 8080
 EXPOSE 8081
 
 # Copy published application
-COPY --chown=appuser:appgroup --chmod=555 --from=publish /app/publish .
+COPY --chmod=555 --from=publish /app/publish/ /app/
 
 # Set environment variables
 ENV ASPNETCORE_URLS=http://+:8080

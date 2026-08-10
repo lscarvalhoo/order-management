@@ -47,8 +47,9 @@ dotnet sonarscanner begin `
 	/n:"$ProjectName" `
 	/d:sonar.host.url="$SonarUrl" `
 	/d:sonar.token="$env:SONAR_TOKEN" `
-	/d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" `
-	/d:sonar.exclusions="**/bin/**,**/obj/**,**/migrations/**,**/wwwroot/**"
+	/d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.opencover.xml" `
+	/d:sonar.exclusions="**/bin/**,**/obj/**,**/Migrations/**,**/wwwroot/**" `
+	/d:sonar.coverage.exclusions="**/Program.cs,**/Migrations/*.cs,**/*Tests/**,**/*Test.cs,**/DatabaseMigrationExtensions.cs,**/OpenTelemetryExtensions.cs,**/DTOs/**,**/Entities/**"
 
 if ($LASTEXITCODE -ne 0) {
 	Write-Error "Failed to begin SonarScanner"
