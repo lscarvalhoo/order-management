@@ -210,11 +210,11 @@ OrderManagement.sln
 
 O projeto implementa **OpenTelemetry** para rastreamento distribuído com export para console:
 
-- ✅ Instrumentação automática de requisições HTTP
-- ✅ Rastreamento de operações de banco de dados (SQLite)
-- ✅ Spans customizados para operações de negócio
-- ✅ Tags contextuais para cada operação
-- ✅ Captura de exceções
+- Instrumentação automática de requisições HTTP
+- Rastreamento de operações de banco de dados (SQLite)
+- Spans customizados para operações de negócio
+- Tags contextuais para cada operação
+- Captura de exceções
 
 ### Logging com Serilog
 
@@ -222,6 +222,42 @@ O projeto implementa **OpenTelemetry** para rastreamento distribuído com export
 - Output para console e arquivo
 - Request/response logging com pipeline behavior
 - Tempo de execução de cada comando/query
+
+## Docker
+
+O projeto pode ser executado completamente em containers Docker, facilitando o deployment e garantindo consistência entre ambientes.
+
+### Quick Start
+
+**Windows (PowerShell):**
+```powershell
+.\docker.ps1 build
+.\docker.ps1 up
+```
+
+**Linux/macOS:**
+```bash
+chmod +x docker.sh
+./docker.sh build
+./docker.sh up
+```
+
+### Recursos Docker
+
+- Multi-stage build otimizado
+- Health check automático
+- Volumes persistentes para dados e logs
+- Scripts helper para Windows e Linux
+- Configuração via variáveis de ambiente
+- Imagens baseadas em .NET 10
+
+### Acesso
+
+Após iniciar os containers:
+- **API**: http://localhost:5000
+- **Swagger**: http://localhost:5000/swagger
+- **Health Check**: http://localhost:5000/health
+
 
 ## Por que Controllers e não Minimal API?
 

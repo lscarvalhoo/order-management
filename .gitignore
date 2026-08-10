@@ -33,8 +33,9 @@ coverage.*
 *.log
 logs/
 
-# Documentation (local only)
-docs/
+# Docker volumes and data
+data/
+.env
 
 # NuGet packages (when using packages folder)
 packages/

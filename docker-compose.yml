@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ordermanagement-api
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/ordermanagement.db
+      - Jwt__Key=YourSuperSecretKeyForJWTTokenGenerationWithMinimum32Characters
+      - Jwt__Issuer=OrderManagementAPI
+      - Jwt__Audience=OrderManagementClient
+      - OpenTelemetry__ServiceName=OrderManagement.API
+      - OpenTelemetry__ServiceVersion=1.0.0
+      - Serilog__MinimumLevel__Default=Information
+      - Serilog__MinimumLevel__Override__Microsoft=Warning
+      - Serilog__MinimumLevel__Override__Microsoft.AspNetCore=Warning
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - ordermanagement-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+networks:
+  ordermanagement-network:
+    driver: bridge
+
+volumes:
+  ordermanagement-data:
+    driver: local
+  ordermanagement-logs:
+    driver: local

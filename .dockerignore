@@ -1,0 +1,49 @@
+# Build artifacts
+**/bin/
+**/obj/
+**/out/
+
+# IDE and editor directories
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userprefs
+*.cache
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Log files
+logs/
+*.log
+
+# Test results
+TestResults/
+**/coverage.json
+**/coverage.cobertura.xml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+*.md
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# CI/CD
+.github/
+azure-pipelines.yml
