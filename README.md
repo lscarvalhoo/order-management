@@ -93,15 +93,115 @@ OrderManagement.sln
 
 ---
 
-## Como Executar
+## 🚀 Como Executar
 
 ### Pré-requisitos
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop) *(opcional)*
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) *(opcional, mas recomendado)*
 
-### Execução Local
+---
 
+### 🐳 **Execução via Docker (Recomendado)**
+
+> ✨ **Executar com Docker garante ambiente isolado, consistente e pronto para produção!**
+
+#### **Windows (PowerShell):**
+```powershell
+# Iniciar aplicação
+.\scripts\docker.ps1 up
+
+# Ver logs em tempo real
+.\scripts\docker.ps1 logs
+
+# Parar aplicação
+.\scripts\docker.ps1 down
+
+# Limpar tudo (volumes, containers, imagens)
+.\scripts\docker.ps1 clean
+```
+
+> 💡 **Primeira vez?** Habilite a execução de scripts:
+> ```powershell
+> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+> ```
+
+#### **Linux/macOS:**
+```bash
+# Tornar script executável (apenas primeira vez)
+chmod +x scripts/docker.sh
+
+# Iniciar aplicação
+./scripts/docker.sh up
+
+# Ver logs
+./scripts/docker.sh logs
+
+# Parar
+./scripts/docker.sh down
+
+# Limpar tudo
+./scripts/docker.sh clean
+```
+
+#### **Acesso via Docker:**
+| Serviço | URL |
+|---------|-----|
+| 🌐 **API** | http://localhost:5000 |
+| 📚 **Swagger UI** | http://localhost:5000/swagger |
+| ❤️ **Health Check** | http://localhost:5000/health |
+
+**Recursos do Docker:**
+- ✅ Migrations aplicadas automaticamente
+- ✅ Banco de dados persistente em volume
+- ✅ Hot reload habilitado
+- ✅ Logs estruturados com Serilog
+- ✅ OpenTelemetry configurado
+- ✅ Health checks integrados
+
+---
+
+### 💻 **Execução Local (Desenvolvimento Rápido)**
+
+> 🔥 **Ideal para desenvolvimento com hot reload e debugging!**
+
+#### **Usando o script auxiliar:**
+
+**Windows:**
+```powershell
+# Executar API
+.\scripts\run-local.ps1
+
+# Executar com hot reload (auto-restart)
+.\scripts\run-local.ps1 watch
+
+# Build da solução
+.\scripts\run-local.ps1 build
+
+# Executar todos os testes
+.\scripts\run-local.ps1 test
+
+# Ver ajuda
+.\scripts\run-local.ps1 help
+```
+
+**Linux/macOS:**
+```bash
+# Tornar executável
+chmod +x scripts/run-local.sh
+
+# Executar API
+./scripts/run-local.sh
+
+# Hot reload
+./scripts/run-local.sh watch
+
+# Build e testes
+./scripts/run-local.sh build
+./scripts/run-local.sh test
+```
+
+#### **Manualmente (tradicional):**
 ```bash
 # 1. Clone o repositório
 git clone https://github.com/lscarvalhoo/order-management.git
@@ -115,36 +215,12 @@ cd src/API/OrderManagement.API
 dotnet run
 ```
 
-**Acesso:**
-- API: http://localhost:5180
-- Swagger: http://localhost:5180/swagger
-
-### Execução via Docker
-
-**Windows (PowerShell):**
-```powershell
-.\scripts\docker.ps1 up    # iniciar
-.\scripts\docker.ps1 down  # parar
-.\scripts\docker.ps1 logs  # logs
-```
-
-> Se necessário, habilite scripts antes:
-> ```powershell
-> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-> ```
-
-**Linux/macOS:**
-```bash
-chmod +x scripts/docker.sh
-./scripts/docker.sh up    # iniciar
-./scripts/docker.sh down  # parar
-./scripts/docker.sh logs  # logs
-```
-
-**Acesso via Docker:**
-- API: http://localhost:5000
-- Swagger: http://localhost:5000/swagger
-- Health Check: http://localhost:5000/health
+#### **Acesso local:**
+| Serviço | URL |
+|---------|-----|
+| 🌐 **API** | http://localhost:5180 |
+| 📚 **Swagger UI** | http://localhost:5180/swagger |
+| ❤️ **Health Check** | http://localhost:5180/health |
 
 ---
 
