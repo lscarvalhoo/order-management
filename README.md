@@ -203,6 +203,26 @@ OrderManagement.sln
     ├── OrderManagement.UnitTests/               (xUnit)
     └── OrderManagement.IntegrationTests/        (xUnit + WebApplicationFactory)
 ```
+
+## Observabilidade
+
+### OpenTelemetry
+
+O projeto implementa **OpenTelemetry** para rastreamento distribuído com export para console:
+
+- ✅ Instrumentação automática de requisições HTTP
+- ✅ Rastreamento de operações de banco de dados (SQLite)
+- ✅ Spans customizados para operações de negócio
+- ✅ Tags contextuais para cada operação
+- ✅ Captura de exceções
+
+### Logging com Serilog
+
+- Logs estruturados
+- Output para console e arquivo
+- Request/response logging com pipeline behavior
+- Tempo de execução de cada comando/query
+
 ## Por que Controllers e não Minimal API?
 
 Apesar do .NET 10 oferecer suporte para **Minimal APIs**, este projeto utiliza **Controllers** porque:

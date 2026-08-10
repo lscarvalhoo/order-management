@@ -1,5 +1,6 @@
 using MediatR;
 using OrderManagement.Application.DTOs;
+using OrderManagement.Application.Telemetry;
 using OrderManagement.Domain.Entities;
 using OrderManagement.Domain.Enums;
 using OrderManagement.Domain.Interfaces;
@@ -17,6 +18,10 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Ord
 
     public async Task<OrderDto> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
+        using var activity = ApplicationActivitySource.StartActivity("CreateOrder");
+        activity?.SetTag("order.customer_id", request.CustomerId);
+        activity?.SetTag("order.items_count", request.Items.Count);
+
         var order = new Order
         {
             Id = Guid.NewGuid(),
@@ -31,6 +36,9 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Ord
                 UnitPrice = item.UnitPrice
             }).ToList()
         };
+
+        activity?.SetTag("order.id", order.Id);
+        activity?.SetTag("order.total_amount", order.TotalAmount);
 
         var createdOrder = await _orderRepository.AddAsync(order, cancellationToken);
 
