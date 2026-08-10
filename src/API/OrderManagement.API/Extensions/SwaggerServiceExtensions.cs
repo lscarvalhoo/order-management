@@ -1,7 +1,10 @@
 using Microsoft.OpenApi.Models;
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace OrderManagement.API.Extensions;
 
+[ExcludeFromCodeCoverage]
 public static class SwaggerServiceExtensions
 {
     public static IServiceCollection AddSwaggerConfiguration(this IServiceCollection services)

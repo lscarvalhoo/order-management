@@ -7,6 +7,11 @@ using OrderManagement.Infrastructure.Repositories;
 
 namespace OrderManagement.Infrastructure.Extensions;
 
+using System.Diagnostics.CodeAnalysis;
+
+namespace OrderManagement.Infrastructure.Extensions;
+
+[ExcludeFromCodeCoverage]
 public static class InfrastructureServiceExtensions
 {
     public static IServiceCollection AddInfrastructureServices(

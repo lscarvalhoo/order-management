@@ -61,6 +61,84 @@ OrderManagement.sln
 
 ---
 
+## Clean Architecture
+
+O projeto adota uma variação prática da Clean Architecture para manter regras de negócio isoladas de detalhes de infraestrutura
+
+- Direcionamento de dependências: camadas externas (API, Infrastructure) dependem de camadas internas (Application, Domain) apenas através de interfaces e DTOs.
+- Domain: contém entidades, agregados, value objects e regras invariantes (métodos que alteram estado interno e validam invariantes). Não conhece EF, controllers ou bibliotecas de infraestrutura.
+- Application: orquestra casos de uso (handlers do MediatR), expõe DTOs e implementa regras de aplicação (validação coordenada, composição de operações). Aqui ficam também os contratos (interfaces) que a Infrastructure implementa.
+- Infrastructure: implementações concretas — EF Core DbContext, repositórios, serviços externos (ex.: clientes HTTP, provedores de fila) e migrações. Isola detalhes de persistência e integrações.
+- API: camada de entrada; compõe dependências, configura middlewares (autenticação, autorização, logging) e mapeia chamadas HTTP para comandos/queries do Application.
+
+Benefícios práticos adotados no projeto:
+
+- Testabilidade: handlers e regras de domínio são testáveis sem depender de infraestrutura.
+- Evolução independente: trocar EF por outro ORM exige mudanças apenas na camada Infrastructure.
+- Clareza de responsabilidades: cada pasta tem propósito óbvio, reduzindo acoplamento.
+
+## FluentValidation + MediatR (ValidationBehavior)
+
+Validações estão centralizadas com FluentValidation na camada `Application`. Para garantir execução automática e padronizada das validações, o projeto registra um `ValidationBehavior<TRequest,TResponse>` no pipeline do MediatR.
+
+Como funciona na prática:
+
+1. Para cada comando/consulta existe um validador (ex.: `CreateOrderCommandValidator`) que implementa regras expressivas (NotEmpty, GreaterThan, MaximumLength, etc.).
+2. O `ValidationBehavior` é um pipeline behavior do MediatR que roda antes do handler: ele resolve todos os validadores aplicáveis ao tipo de requisição e executa as validações.
+3. Em caso de falha, o comportamento interrompe o pipeline e lança uma exceção de validação que é convertida pelo middleware/filtro em uma resposta HTTP 400 com payload estruturado (lista de erros).
+
+Vantagens:
+
+- Validação consistente e centralizada, sem código repetido nos handlers.
+- Mensagens de erro padronizadas (úteis para clientes e para asserts em testes).
+- Facilidade para adicionar novas regras sem tocar handlers.
+
+## Docker — Dockerfile e docker-compose
+
+O repositório inclui arquivos para executar a API e cenários auxiliares em contêineres quando necessário. Use Docker para demonstrar a aplicação em um ambiente isolado ou para integrar com serviços externos (ex.: SonarQube) — para desenvolvimento rápido recomendamos os scripts locais (`scripts/run-local.*`).
+
+Principais arquivos:
+
+- `src/API/OrderManagement.API/Dockerfile` — Dockerfile multi-stage para construir a imagem da API com .NET 10.
+- `build/docker-compose.yml` — Compose para levantar a stack de desenvolvimento (quando aplicável).
+- `build/docker-compose.sonar.yml` — Compose específico para SonarQube e análise de código (opcional).
+
+Uso rápido (exemplos):
+
+Opção A — Build e executar apenas a API em um container:
+
+```powershell
+# a partir da raiz do repositório
+cd src/API/OrderManagement.API
+
+# Build da imagem
+docker build -t ordermanagement:local .
+
+# Executar a API em um container e mapear a porta 80 do container para 5180 da máquina
+docker run --rm -p 5180:80 --name ordermanagement ordermanagement:local
+
+# A API ficará disponível em: http://localhost:5180
+```
+
+Opção B — Levantar a stack definida no docker-compose (a partir da raiz do repositório):
+
+```powershell
+docker compose -f build/docker-compose.yml up --build
+
+# Para parar e remover os containers:
+docker compose -f build/docker-compose.yml down
+```
+
+Opção C — (Opcional) Levantar SonarQube via compose para análise:
+
+```powershell
+# Após a inicialização, a interface do SonarQube estará em http://localhost:9000
+docker compose -f build/docker-compose.sonar.yml up --build
+```
+
+Observação: para desenvolvimento iterativo preferimos `scripts/run-local.ps1` / `scripts/run-local.sh` que iniciam a aplicação com `dotnet run` (sem Docker) — são mais leves e mais rápidos para a maioria das tarefas de desenvolvimento.
+
+
 ## Domínio
 
 ### Order
@@ -150,7 +228,7 @@ chmod +x scripts/run-local.sh
 ./scripts/run-local.sh test
 ```
 
-#### **Manualmente (tradicional):**
+#### **Manualmente**
 ```bash
 # 1. Clone o repositório
 git clone https://github.com/lscarvalhoo/order-management.git

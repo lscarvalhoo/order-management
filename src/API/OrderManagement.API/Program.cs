@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using OrderManagement.API.Extensions;
 using OrderManagement.Application.Extensions;
 using OrderManagement.Infrastructure.Extensions;
@@ -72,4 +73,5 @@ if (!isTesting)
 }
 app.Run();
 
+[ExcludeFromCodeCoverage]
 public partial class Program { }

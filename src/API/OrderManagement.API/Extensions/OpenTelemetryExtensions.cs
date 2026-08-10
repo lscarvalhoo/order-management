@@ -1,8 +1,11 @@
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace OrderManagement.API.Extensions;
 
+[ExcludeFromCodeCoverage]
 public static class OpenTelemetryExtensions
 {
     public static IServiceCollection AddOpenTelemetryConfiguration(
@@ -66,4 +69,6 @@ public static class OpenTelemetryExtensions
 
         return services;
     }
+
+[ExcludeFromCodeCoverage]
 }
