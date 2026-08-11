@@ -14,35 +14,21 @@ ENV HOME=/home/appuser
 ENV NUGET_PACKAGES=/home/appuser/.nuget/packages
 ENV PATH="${PATH}:/home/appuser/.dotnet/tools"
 USER appuser
-WORKDIR /source
+WORKDIR /work
 
 # Install SonarScanner for .NET and ReportGenerator for coverage
-RUN dotnet tool install --global dotnet-sonarscanner \
+# Pin scanner < 11 due to SonarQube 10.x compatibility
+RUN dotnet tool install --global dotnet-sonarscanner --version 10.4.1 \
 	&& dotnet tool install --global dotnet-reportgenerator-globaltool
 
-# Copy solution and project files
-COPY --chmod=444 ["OrderManagement.sln", "./"]
-COPY --chmod=444 ["src/API/OrderManagement.API/OrderManagement.API.csproj", "src/API/OrderManagement.API/"]
-COPY --chmod=444 ["src/Application/OrderManagement.Application/OrderManagement.Application.csproj", "src/Application/OrderManagement.Application/"]
-COPY --chmod=444 ["src/Domain/OrderManagement.Domain/OrderManagement.Domain.csproj", "src/Domain/OrderManagement.Domain/"]
-COPY --chmod=444 ["src/Infrastructure/OrderManagement.Infrastructure/OrderManagement.Infrastructure.csproj", "src/Infrastructure/OrderManagement.Infrastructure/"]
-COPY --chmod=444 ["tests/OrderManagement.UnitTests/OrderManagement.UnitTests.csproj", "tests/OrderManagement.UnitTests/"]
-COPY --chmod=444 ["tests/OrderManagement.IntegrationTests/OrderManagement.IntegrationTests.csproj", "tests/OrderManagement.IntegrationTests/"]
-RUN cp -R /source/. /work/ \
-	&& chmod -R u+w /work
+# Copy solution and source files
+COPY --chown=appuser:appgroup --chmod=644 OrderManagement.sln ./
+COPY --chown=appuser:appgroup src/ src/
+COPY --chown=appuser:appgroup tests/ tests/
 
 # Restore dependencies
 WORKDIR /work
 RUN dotnet restore "OrderManagement.sln"
-
-# Copy application and test source only
-WORKDIR /source
-COPY --chmod=555 ["src/", "src/"]
-COPY --chmod=555 ["tests/", "tests/"]
-RUN cp -R /source/src/. /work/src/ \
-	&& cp -R /source/tests/. /work/tests/ \
-	&& chmod -R u+w /work/src /work/tests
-WORKDIR /work
 
 # Create a script to run the analysis
 RUN echo '#!/bin/bash\n\
@@ -55,11 +41,11 @@ dotnet sonarscanner begin \\\n\
   /k:"${SONAR_PROJECT_KEY}" \\\n\
   /n:"${SONAR_PROJECT_NAME}" \\\n\
   /v:"${SONAR_PROJECT_VERSION}" \\\n\
-  /d:sonar.host.url="${SONAR_HOST_URL}" \\\n\
+  /d:sonar.host.url="http://sonarqube:9000" \\\n\
   /d:sonar.token="${SONAR_TOKEN}" \\\n\
   /d:sonar.cs.opencover.reportsPaths="TestResults/**/coverage.opencover.xml" \\\n\
   /d:sonar.coverage.exclusions="**/Program.cs,**/Migrations/*.cs,**/*Tests/**,**/*Test.cs,**/DatabaseMigrationExtensions.cs,**/OpenTelemetryExtensions.cs,**/DTOs/**,**/Entities/**" \\\n\
-  /d:sonar.exclusions="**/Migrations/**,**/obj/**,**/bin/**"
+  /d:sonar.exclusions="**/Migrations/**,**/obj/**,**/bin/**"\n\
 \n\
 # Build the solution\n\
 dotnet build OrderManagement.sln --configuration Release --no-restore\n\

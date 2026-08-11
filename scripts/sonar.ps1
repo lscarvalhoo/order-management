@@ -10,6 +10,7 @@ $ErrorActionPreference = "Stop"
 # Determine script and project root directories
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $SonarComposeFile = Join-Path $ProjectRoot "build\docker-compose.sonar.yml"
+$DevComposeFile = Join-Path $ProjectRoot "build\docker-compose.dev.yml"
 
 function Write-Info {
 	param([string]$Message)
@@ -43,6 +44,7 @@ Commands:
 	restart     Restart SonarQube services
 	logs        Show logs from SonarQube
 	analyze     Run code analysis (requires SONAR_TOKEN)
+	analyze-dev Start Development API and run code analysis (requires SONAR_TOKEN)
 	status      Check SonarQube status
 	token       Show instructions to create a token
 	clean       Stop services and remove volumes
@@ -54,6 +56,7 @@ Environment Variables:
 Examples:
 	.\sonar.ps1 start
 	`$env:SONAR_TOKEN="your_token"; .\sonar.ps1 analyze
+	`$env:SONAR_TOKEN="your_token"; .\sonar.ps1 analyze-dev
 	.\sonar.ps1 logs
 	.\sonar.ps1 status
 
@@ -109,8 +112,24 @@ function Start-Analysis {
 	}
 
 	Write-Info "Starting code analysis..."
-	docker-compose -f $SonarComposeFile --profile analysis up --build scanner
+	docker-compose -f $SonarComposeFile --profile analysis up --build --remove-orphans scanner
 	Write-Success "Analysis completed! Check results at http://localhost:9000"
+}
+
+function Start-DevAnalysis {
+	if (-not $env:SONAR_TOKEN) {
+		Write-Error "SONAR_TOKEN environment variable is required"
+		Write-Info "Run: .\sonar.ps1 token"
+		exit 1
+	}
+
+	Write-Info "Starting Development API..."
+	docker-compose -f $DevComposeFile up -d api
+	Write-Success "Development API started successfully"
+
+	Write-Info "Starting code analysis against development environment..."
+	docker-compose -f $SonarComposeFile --profile analysis up --build --remove-orphans scanner
+	Write-Success "Dev analysis completed! Check results at http://localhost:9000"
 }
 
 function Test-Status {
@@ -208,6 +227,9 @@ switch ($Command.ToLower()) {
 	}
 	"analyze" {
 		Start-Analysis
+	}
+	"analyze-dev" {
+		Start-DevAnalysis
 	}
 	"status" {
 		Test-Status

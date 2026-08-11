@@ -149,27 +149,61 @@ Para desenvolvimento iterativo prefiro `scripts/run-local.*` com `dotnet run` �
 ### Pré-requisitos
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- Docker Desktop (para execução via containers)
 
 ---
 
-### **Execução Local**
+### Execução com Docker (Desenvolvimento)
 
-#### **Usando o script auxiliar:**
+> O script `scripts/docker.ps1` foi configurado para usar `build/docker-compose.dev.yml` por padrão, subindo a API em `Development` (Swagger habilitado).
 
 > **Primeira vez?** Habilite a execução de scripts:
 > ```powershell
 > Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 > ```
 
-**Windows:**
+**Windows (recomendado):**
 ```powershell
-# Execute a partir da raiz do projeto (order-management/)
+# Executar a partir da raiz do projeto
 cd C:\caminho\para\order-management
 
+# Subir ambiente de desenvolvimento
+.\scripts\docker.ps1 up
+
+# Ver logs da API
+.\scripts\docker.ps1 logs-api
+
+# Health check
+.\scripts\docker.ps1 health
+
+# Parar ambiente
+.\scripts\docker.ps1 down
+```
+
+**Comando docker compose equivalente:**
+```powershell
+docker compose -f build/docker-compose.dev.yml up -d
+```
+
+#### Acesso (Docker Dev)
+| Serviço | URL |
+|---|---|
+| **API** | http://localhost:5000 |
+| **Swagger UI** | http://localhost:5000/swagger/index.html |
+| **Health Check** | http://localhost:5000/health |
+
+---
+
+### Execução Local (sem Docker)
+
+#### Usando o script auxiliar
+
+**Windows:**
+```powershell
 # Executar API
 .\scripts\run-local.ps1
 
-# Executar com hot reload (auto-restart)
+# Executar com hot reload
 .\scripts\run-local.ps1 watch
 
 # Build da solução
@@ -177,58 +211,32 @@ cd C:\caminho\para\order-management
 
 # Executar todos os testes
 .\scripts\run-local.ps1 test
-
-# Ver ajuda
-.\scripts\run-local.ps1 help
 ```
 
 **Linux/macOS:**
 ```bash
-# Execute a partir da raiz do projeto (order-management/)
-cd /caminho/para/order-management
-
-# Tornar executável (apenas primeira vez)
 chmod +x scripts/run-local.sh
-
-# Executar API
 ./scripts/run-local.sh
-
-# Hot reload
 ./scripts/run-local.sh watch
-
-# Build e testes
 ./scripts/run-local.sh build
 ./scripts/run-local.sh test
 ```
 
-#### **Manualmente**
+#### Manualmente
 ```bash
-# 1. Clone o repositório
 git clone https://github.com/lscarvalhoo/order-management.git
 cd order-management
-
-# 2. Restaure as dependências
 dotnet restore
-
-# 3. Execute a API
 cd src/API/OrderManagement.API
 dotnet run
 ```
 
-#### **Acesso:**
+#### Acesso (Local)
 | Serviço | URL |
-|---------|-----|
+|---|---|
 | **API** | http://localhost:5180 |
 | **Swagger UI** | http://localhost:5180/swagger |
 | **Health Check** | http://localhost:5180/health |
-
-**Recursos:**
-- Migrations aplicadas automaticamente
-- Banco de dados SQLite local
-- Hot reload habilitado (modo `watch`)
-- Logs estruturados com Serilog
-- OpenTelemetry configurado
-- Health checks integrados
 
 ---
 
@@ -406,16 +414,25 @@ SONAR_TOKEN=seu_token ./scripts/analyze-local.sh
 
 Resultados: http://localhost:9000/dashboard?id=order-management
 
-### Análise via Docker (Opcional)
+### Análise via Docker
 
-Para iniciar o SonarQube via Docker e executar análise containerizada:
+Para análise containerizada com SonarQube:
 
-**Windows:**
+**Windows (fluxo padrão):**
 ```powershell
 .\scripts\sonar.ps1 start
 $env:SONAR_TOKEN="seu_token"
 .\scripts\sonar.ps1 analyze
 ```
+
+**Windows (apontando para ambiente de desenvolvimento):**
+```powershell
+.\scripts\sonar.ps1 start
+$env:SONAR_TOKEN="seu_token"
+.\scripts\sonar.ps1 analyze-dev
+```
+
+> O comando `analyze-dev` sobe a API de desenvolvimento com `build/docker-compose.dev.yml` antes de executar o scanner.
 
 **Linux/macOS:**
 ```bash

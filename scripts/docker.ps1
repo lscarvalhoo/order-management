@@ -9,7 +9,7 @@ $ErrorActionPreference = "Stop"
 
 # Determine script and project root directories
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
-$ComposeFile = Join-Path $ProjectRoot "build\docker-compose.yml"
+$ComposeFile = Join-Path $ProjectRoot "build\docker-compose.dev.yml"
 
 function Write-Info {
 	param([string]$Message)
@@ -33,7 +33,7 @@ function Write-Error {
 
 function Show-Help {
 	@"
-Order Management API - Docker Compose Helper
+Order Management API - Docker Compose Helper (Development)
 
 Usage: .\docker.ps1 [command]
 
@@ -76,8 +76,8 @@ function Test-Docker {
 
 function New-Directories {
 	Write-Info "Creating necessary directories..."
-	$dataDir = Join-Path $ProjectRoot "data"
-	$logsDir = Join-Path $ProjectRoot "logs"
+	$dataDir = Join-Path $ProjectRoot "build\data"
+	$logsDir = Join-Path $ProjectRoot "build\logs"
 	New-Item -ItemType Directory -Force -Path $dataDir | Out-Null
 	New-Item -ItemType Directory -Force -Path $logsDir | Out-Null
 	Write-Success "Directories created"
@@ -95,7 +95,7 @@ function Start-Services {
 	docker-compose -f $ComposeFile up -d
 	Write-Success "Services started successfully"
 	Write-Info "API is running at http://localhost:5000"
-	Write-Info "Swagger UI is available at http://localhost:5000/swagger"
+	Write-Info "Swagger UI is available at http://localhost:5000/swagger/index.html"
 	Write-Info "Use '.\scripts\docker.ps1 logs' to view logs"
 }
 
@@ -125,8 +125,8 @@ function Remove-Volumes {
 	Write-Info "Stopping services and removing volumes..."
 	docker-compose -f $ComposeFile down -v
 	Write-Warning "Removing data and logs directories..."
-	$dataDir = Join-Path $ProjectRoot "data"
-	$logsDir = Join-Path $ProjectRoot "logs"
+	$dataDir = Join-Path $ProjectRoot "build\data"
+	$logsDir = Join-Path $ProjectRoot "build\logs"
 	if (Test-Path $dataDir) { Remove-Item -Path $dataDir -Recurse -Force }
 	if (Test-Path $logsDir) { Remove-Item -Path $logsDir -Recurse -Force }
 	Write-Success "Cleanup completed"
@@ -144,7 +144,7 @@ function Rebuild-All {
 function Test-Health {
 	Write-Info "Checking API health..."
 
-	$containers = docker ps --filter "name=ordermanagement-api" --format "{{.Names}}"
+	$containers = docker ps --filter "name=ordermanagement-api-dev" --format "{{.Names}}"
 	if (-not $containers) {
 		Write-Error "API container is not running"
 		exit 1
@@ -166,7 +166,7 @@ function Test-Health {
 
 function Open-Shell {
 	Write-Info "Opening shell in API container..."
-	docker-compose -f ../build/docker-compose.yml exec api /bin/bash
+	docker-compose -f $ComposeFile exec api /bin/bash
 }
 
 # Main script logic

@@ -368,9 +368,14 @@ A implementação atual usa `AddConsoleExporter()`. Para trocar, edite `OpenTele
 # 2. Verificar status
 .\scripts\sonar.ps1 status
 
-# 3. Executar análise
+# 3. Executar análise padrão
 $env:SONAR_TOKEN="seu_token"
 .\scripts\sonar.ps1 analyze
+
+# 3b. Executar análise apontando para ambiente de desenvolvimento
+# (sobe a API com build/docker-compose.dev.yml e roda scanner)
+$env:SONAR_TOKEN="seu_token"
+.\scripts\sonar.ps1 analyze-dev
 
 # 4. Ver resultados
 start http://localhost:9000/dashboard?id=order-management
@@ -411,6 +416,7 @@ curl -u admin:sua_senha \
 | `start` | Inicia SonarQube + PostgreSQL |
 | `stop` | Para os serviços |
 | `analyze` | Executa análise de código |
+| `analyze-dev` | Sobe a API de desenvolvimento (`docker-compose.dev.yml`) e executa a análise |
 | `status` | Verifica se o SonarQube está pronto |
 | `logs` | Exibe logs em tempo real |
 | `token` | Instruções para gerar token |

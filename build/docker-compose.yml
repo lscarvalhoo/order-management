@@ -1,8 +1,8 @@
 services:
   api:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: build/Dockerfile
     container_name: ordermanagement-api
     ports:
       - "5000:8080"
@@ -21,8 +21,8 @@ services:
       - Serilog__MinimumLevel__Override__Microsoft=Warning
       - Serilog__MinimumLevel__Override__Microsoft.AspNetCore=Warning
     volumes:
-      - ./data:/app/data
-      - ./logs:/app/logs
+      - ../data:/app/data
+      - ../logs:/app/logs
     networks:
       - ordermanagement-network
     restart: unless-stopped

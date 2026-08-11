@@ -18,11 +18,11 @@ services:
       - ordermanagement-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9000/api/system/status || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9000/api/system/status | grep -q '\"status\":\"UP\"' || exit 1"]
       interval: 30s
       timeout: 10s
-      retries: 5
-      start_period: 60s
+      retries: 10
+      start_period: 90s
 
   sonarqube-db:
     image: postgres:16-alpine
@@ -56,9 +56,7 @@ services:
       - SONAR_PROJECT_KEY=order-management
       - SONAR_PROJECT_NAME=Order Management API
       - SONAR_PROJECT_VERSION=1.0.0
-    volumes:
-      - ../:/work
-      - sonar_scanner_cache:/home/appuser/.sonar/cache
+      - SONAR_USER_HOME=/home/appuser/.sonar
     networks:
       - ordermanagement-network
     profiles:
@@ -76,6 +74,4 @@ volumes:
   sonarqube_logs:
     driver: local
   postgresql_data:
-    driver: local
-  sonar_scanner_cache:
     driver: local
